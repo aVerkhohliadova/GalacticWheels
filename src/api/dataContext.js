@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { User } from "../DB";
+import { getUser } from "./authentication";
 
 const ctx = createContext();
 
@@ -16,13 +16,16 @@ export function DataContext({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, _setUser] = useState();
 
-  // TODO: Remove simulation of async loading
   useEffect(() => {
-    setTimeout(() => {
-      setUser(new User({ name: "Dummy", id: 1, phone: "+1 111-111-1111", email:"dummy@gmail.com", password:"123456" }));
+    // setTimeout(() => {
+    getUser().then((user) => {
+      if (user) {
+        _setUser(user);
+        console.log("Logging in ", user.displayName);
+      }
       setIsLoading(false);
-    }, 3000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    });
+    // }, 3000);
   }, []);
 
   const setUser = useCallback((data) => {

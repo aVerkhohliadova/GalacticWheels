@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import { Text, View } from "react-native";
+import { View, Text } from "react-native";
 import useDataContext from "../api/dataContext";
 
 export default function Home() {
-  const { user, isLoading } = useDataContext();
+  const { user } = useDataContext();
 
   useEffect(() => {
-    console.log("Dummy user logged in!");
+    if (user) console.log("Dummy user logged in!");
   }, [user]);
 
   return (
@@ -18,7 +18,7 @@ export default function Home() {
         justifyContent: "center",
       }}
     >
-      {isLoading ? <Text>Loading...</Text> : <Text>App has now loaded!</Text>}
+      <Text>This is home screen</Text>
     </View>
   );
 }
