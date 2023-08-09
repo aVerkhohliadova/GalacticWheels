@@ -19,7 +19,7 @@ export function DataContext({ children }) {
   // TODO: Remove simulation of async loading
   useEffect(() => {
     setTimeout(() => {
-      setUser(new User({ name: "Dummy", id: 1 }));
+      setUser(new User({ name: "Dummy", id: 1, phone: "+1 111-111-1111", email:"dummy@gmail.com", password:"123456" }));
       setIsLoading(false);
     }, 3000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
