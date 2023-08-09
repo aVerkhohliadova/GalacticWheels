@@ -17,15 +17,16 @@ export function DataContext({ children }) {
   const [user, _setUser] = useState();
 
   useEffect(() => {
-    // setTimeout(() => {
-    getUser().then((user) => {
-      if (user) {
-        _setUser(user);
-        console.log("Logging in ", user.displayName);
-      }
-      setIsLoading(false);
-    });
-    // }, 3000);
+    // TODO: Remove timeout later
+    setTimeout(() => {
+      getUser().then((user) => {
+        if (user) {
+          _setUser(user);
+          console.log("Logging in ", user.displayName);
+        }
+        setIsLoading(false);
+      });
+    }, 3000);
   }, []);
 
   const setUser = useCallback((data) => {

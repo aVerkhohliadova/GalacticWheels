@@ -1,10 +1,15 @@
 import { ActivityIndicator, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import useDataContext, { DataContext } from "./src/api/dataContext";
-import { Home, Login } from "./src/pages";
+import { Home, Login, Orders, Profile, Signup } from "./src/pages";
+
+const Stack = createNativeStackNavigator();
 
 function Router() {
   const { user, isLoading } = useDataContext();
 
+  // NOTE: Maybe splash screen here?
   if (isLoading)
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
@@ -12,9 +17,24 @@ function Router() {
       </View>
     );
 
-  if (!user) return <Login />;
-
-  return <Home />;
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          <>
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Orders" component={Orders} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Signup" component={Signup} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
 
 export default function App() {
