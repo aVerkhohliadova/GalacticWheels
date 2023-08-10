@@ -1,8 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet, ActivityIndicator, StatusBar } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, StatusBar, Button } from "react-native";
+// import { useNavigation } from "@react-navigation/native";
 import useDataContext from "../api/dataContext";
 
-const Profile = () => {
+const Profile = ({ navigation }) => {
     const { user, isLoading } = useDataContext();
 
     if (isLoading) {
@@ -31,6 +32,11 @@ const Profile = () => {
                     <Text style={styles.infoValue}>{user.email}</Text>
                 </View>
             </View>
+
+            <Button
+                title="View Order History"
+                onPress={() => navigation.navigate("Orders")} // Navigate to Orders page
+            />
         </View>
     );
 };
