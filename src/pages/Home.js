@@ -1,13 +1,14 @@
-import { useEffect } from "react";
 import { View, Text, Button } from "react-native";
 import useDataContext from "../api/dataContext";
+import { logout } from "../api/authentication";
 
 export default function Home({ navigation }) {
-  const { user } = useDataContext();
+  const { user, setUser, updateUserData } = useDataContext();
 
-  useEffect(() => {
-    if (user) console.log("Dummy user logged in!");
-  }, [user]);
+  const onLogout = () => {
+    logout();
+    setUser(); // Do NOT use setUser elsewhere, use updateUserData instead
+  };
 
   return (
     <View
@@ -18,12 +19,18 @@ export default function Home({ navigation }) {
         justifyContent: "center",
       }}
     >
-      <Text>This is home screen</Text>
+      <Text>Logged in as {user.email}</Text>
+      <Text>Currently, name is: {user.name}, try sample button below </Text>
 
       <Button
-                title="View Profile"
-                onPress={() => navigation.navigate("Profile")} // Navigate to Profile page
-            />
+        title="Sample Buton: Update User Name"
+        onPress={() => updateUserData({ ...user, name: "Topsy Krett" })}
+      />
+      <Button
+        title="View Profile"
+        onPress={() => navigation.navigate("Profile")}
+      />
+      <Button title="Logout" onPress={onLogout} />
     </View>
   );
 }

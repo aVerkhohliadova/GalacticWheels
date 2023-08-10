@@ -7,10 +7,10 @@ import { Home, Login, Orders, Profile, Signup } from "./src/pages";
 const Stack = createNativeStackNavigator();
 
 function Router() {
-  const { user, isLoading } = useDataContext();
+  const { user, isLoadingContext } = useDataContext();
 
   // NOTE: Maybe splash screen here?
-  if (isLoading)
+  if (isLoadingContext)
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <ActivityIndicator />
