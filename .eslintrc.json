@@ -12,6 +12,7 @@
     }
   },
   "rules": {
+    "no-console": "off",
     "react/exhaustive-deps": "off",
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
