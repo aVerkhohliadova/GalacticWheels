@@ -1,18 +1,43 @@
 import { useState } from "react";
-import { View, Button, TextInput, Text } from "react-native";
+import {
+  View,
+  Button,
+  TextInput,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+} from "react-native";
 import { signUp } from "../api/authentication";
 import { COLLECTION, addWithId } from "../api/firestore";
 import useDataContext from "../api/dataContext";
+import Logo from "../components/Logo";
+
+const styles = StyleSheet.create({
+  textInput: {
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    width: 200,
+    margin: 10,
+  },
+});
 
 export default function Login({ navigation }) {
   const { setUser } = useDataContext();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
 
   const onSignup = async () => {
     setError("");
+
+    if (!name) {
+      setError("Please enter a name");
+      return;
+    }
 
     if (!email) {
       setError("Please enter an email");
@@ -34,12 +59,12 @@ export default function Login({ navigation }) {
     if (!authUser) return;
 
     const newUser = {
+      name,
+      cart: [],
+      orderHistory: [],
       id: authUser.uid,
       email: authUser.email,
       phone: authUser.phoneNumber,
-      name: authUser.displayName,
-      orderHistory: [],
-      cart: [],
     };
 
     try {
@@ -51,19 +76,58 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: "#fff",
         alignItems: "center",
-        justifyContent: "center",
+        width: "100%",
       }}
     >
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
-      <TextInput placeholder="Password" value={pass} onChangeText={setPass} />
-      <Button title="Signup" onPress={onSignup} />
-      <Button title="Back to Login" onPress={() => navigation.pop()} />
-      <Text>{error}</Text>
-    </View>
+      <Logo />
+
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
+          SIGNUP
+        </Text>
+        <TextInput
+          placeholder="Name"
+          value={name}
+          onChangeText={setName}
+          style={styles.textInput}
+          autoFocus
+        />
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.textInput}
+        />
+        <TextInput
+          style={styles.textInput}
+          placeholder="Password"
+          value={pass}
+          onChangeText={setPass}
+        />
+        <Text style={{ fontSize: 12, fontWeight: "100", marginTop: 20 }}>
+          {error}
+        </Text>
+      </View>
+
+      <View style={{ marginBottom: 50 }}>
+        <Button title="Submit" onPress={onSignup} />
+        <Button
+          color="dimgrey"
+          title="Back to Login"
+          onPress={() => navigation.navigate("Login")}
+        />
+      </View>
+    </SafeAreaView>
   );
 }

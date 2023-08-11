@@ -76,7 +76,7 @@ export async function remove(coll, id) {
 
 export async function get(coll, id) {
   try {
-    return await getDoc(doc(db, coll, id));
+    return (await getDoc(doc(db, coll, id))).data();
   } catch (e) {
     throw e.message;
   }
