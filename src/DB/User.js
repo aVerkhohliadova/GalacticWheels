@@ -1,24 +1,28 @@
-import Order from './Order';
+// import { COLLECTION, add, update } from "../api/firestore";
+import Order from "./Order";
 
 export default class User {
-  // Add functions specific to the ADT in it's own class, then call it from hooks in the page.
-  // This is also where we will update data in firebase using apis from api/ folder
-  constructor({ name, id, phone, email, password }) {
-    this.name = name;
+  constructor({ displayName, id, phone, email, orderHistory = [], cart = [] }) {
     this.id = id;
+    this.name = displayName;
     this.phone = phone;
     this.email = email;
-    this.orderHistory = []; // Initialize orderHistory as an empty array
+    this.orderHistory = orderHistory;
+    this.cart = cart;
   }
 
   addOrderToHistory(orderData) {
     const order = new Order(orderData);
     this.orderHistory.push(order);
+    // this._update();
   }
 
-  // signup() {}
+  // async _add() {
+  //   const id = await add(COLLECTION.USERS, this);
+  //   this.id = id;
+  // }
   //
-  // login() {}
-  //
-  // session() {}
+  // _update() {
+  //   update(COLLECTION.USERS, this.id, this);
+  // }
 }
