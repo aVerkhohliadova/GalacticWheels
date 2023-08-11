@@ -1,73 +1,14 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Image, View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
-import { FontAwesome, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import useDataContext from '../api/dataContext';
 
 export default function Cart() {
-	let [cartItems, setCartItems] = useState([]);
+	const { user, setUser, updateUserData } = useDataContext();
 	let [deleteModalVisible, setDeleteModalVisible] = useState(false);
 	let [deleteItem, setDeleteItem] = useState();
 
-	useEffect(() => {
-		// TODO: api call to get cart items
-		setCartItems([
-			{
-				id: '1',
-				name: '2003 Formula',
-				price: '1999.99',
-				quantity: '1',
-				imageUrl:
-					'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			},
-			{
-				id: '2',
-				name: '2003 Formula 2',
-				price: '1999.99',
-				quantity: '1',
-				imageUrl:
-					'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			},
-			{
-				id: '3',
-				name: '2003 Formula 3',
-				price: '3000.00',
-				quantity: '2',
-				imageUrl:
-					'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			},
-			// {
-			// 	id: '4',
-			// 	name: '2003 Formula 3',
-			// 	price: '3000.00',
-			// 	quantity: '2',
-			// 	imageUrl:
-			// 		'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			// },
-			// {
-			// 	id: '5',
-			// 	name: '2003 Formula 3',
-			// 	price: '3000.00',
-			// 	quantity: '2',
-			// 	imageUrl:
-			// 		'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			// },
-			// {
-			// 	id: '6',
-			// 	name: '2003 Formula 3',
-			// 	price: '3000.00',
-			// 	quantity: '2',
-			// 	imageUrl:
-			// 		'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			// },
-			// {
-			// 	id: '7',
-			// 	name: '2003 Formula 3',
-			// 	price: '3000.00',
-			// 	quantity: '2',
-			// 	imageUrl:
-			// 		'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			// },
-		]);
-	}, []);
+	useEffect(() => {}, []);
 
 	const showDeleteModal = (item) => {
 		setDeleteItem(item);
@@ -75,33 +16,35 @@ export default function Cart() {
 	};
 
 	const removeItemFromCart = () => {
-		// TODO: api call to remove item from cart
-		const newCart = [...cartItems.filter((i) => i.id !== deleteItem.id)];
-		setCartItems(newCart);
+		const newCartItems = [...user.cart.filter((i) => i.product.id !== deleteItem.id)];
+		updateUserData({
+			...user,
+			cart: newCartItems,
+		});
 		setDeleteModalVisible(false);
 	};
 
 	const getTotalPrice = () => {
-		const totalPrice = cartItems.reduce((total, val) => {
-			return total + Number(val.price);
+		const totalPrice = user.cart.reduce((total, val) => {
+			return total + Number(val.product.price);
 		}, 0);
 		return totalPrice.toFixed(2);
 	};
 
 	return (
 		<View style={styles.container}>
-			{cartItems && cartItems.length !== 0 ? (
+			{user && user.cart && user.cart.length !== 0 ? (
 				<>
 					<ScrollView style={styles.scrollView}>
 						<View style={styles.items}>
-							{cartItems.map((item) => {
+							{user.cart.map((item) => {
 								return (
-									<View key={item.id} style={styles.item}>
+									<View key={item.product.id} style={styles.item}>
 										<View>
 											<Image
 												style={styles.item.img}
 												source={{
-													uri: item.imageUrl,
+													uri: item.product.imageUrl,
 												}}
 											/>
 										</View>
@@ -114,32 +57,35 @@ export default function Cart() {
 												}}>
 												<View style={{ flex: 1 }}>
 													<Text numberOfLines={1} style={styles.item.itemName}>
-														{item.name}
+														{item.product.name}
 													</Text>
 													<Text style={styles.item.itemSub}>White</Text>
 												</View>
 												<TouchableOpacity
 													onPress={() => {
-														showDeleteModal(item);
+														showDeleteModal(item.product);
 													}}>
 													<Entypo name="cross" size={24} color="red" />
 												</TouchableOpacity>
 											</View>
-											<View style={styles.item.priceQuantity}>
-												<Text style={styles.item.price}>$ {item.price}</Text>
-												<View style={styles.item.quantityDiv}>
-													<TouchableOpacity>
-														<View style={styles.item.roundBtn}>
-															<FontAwesome name="minus" size={14} color="black" />
-														</View>
-													</TouchableOpacity>
-													<Text style={styles.item.quantity}>{item.quantity}</Text>
-													<TouchableOpacity>
-														<View style={styles.item.roundBtn}>
-															<FontAwesome name="plus" size={14} color="black" />
-														</View>
-													</TouchableOpacity>
+											<View
+												style={{
+													display: 'flex',
+													flexDirection: 'row',
+													justifyContent: 'space-between',
+													alignItems: 'center'
+												}}>
+												<View>
+													<Text style={styles.dateLabel}>From</Text>
+													<Text style={styles.date}>{item.startDate}</Text>
 												</View>
+												<View>
+													<Text style={styles.dateLabel}>To</Text>
+													<Text style={styles.date}>{item.startDate}</Text>
+												</View>
+											</View>
+											<View>
+												<Text style={styles.item.price}>$ {item.product.price}</Text>
 											</View>
 										</View>
 									</View>
@@ -211,12 +157,21 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fff',
 		borderRadius: 12,
 	},
+	dateLabel: {
+		minWidth: 50,
+	},
+	date: {
+		marginTop: 4,
+		borderWidth: 1,
+		padding: 2,
+	},
 	item: {
 		padding: 16,
 		borderBottomColor: '#eaeaea',
 		borderBottomWidth: 1,
 		display: 'flex',
 		flexDirection: 'row',
+		alignItems: 'center',
 		detail: {
 			flex: 1,
 			marginLeft: 20,
@@ -251,17 +206,10 @@ const styles = StyleSheet.create({
 			color: 'grey',
 		},
 		price: {
+			marginTop: 5,
 			fontWeight: 'bold',
 			fontSize: 20,
-		},
-		roundBtn: {
-			width: 30,
-			height: 30,
-			borderWidth: 1,
-			display: 'flex',
-			alignItems: 'center',
-			justifyContent: 'center',
-			borderRadius: 15,
+			textAlign: 'right'
 		},
 		quantity: {
 			marginLeft: 10,
@@ -269,6 +217,14 @@ const styles = StyleSheet.create({
 			fontSize: 18,
 			fontWeight: 'bold',
 		},
+	},
+	input: {
+		height: 30,
+		borderWidth: 1,
+		paddingStart: 10,
+		paddingEnd: 10,
+		paddingTop: 5,
+		paddingBottom: 5,
 	},
 	bottomView: {
 		display: 'flex',
