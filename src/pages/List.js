@@ -6,63 +6,62 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-// import useDataContext from "../api/dataContext";
-import { Divider, Card } from "react-native-paper";
+import { Card } from "react-native-paper";
+import useDataContext from "../api/dataContext";
 
-const List = ({ navigation }) => {
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 20,
+  },
+
+  spaceshipHeading: {
+    marginTop: 80,
+    marginLeft: 20,
+    fontSize: 25,
+    fontWeight: "bold",
+  },
+  spaceshipItem: {
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 5,
+    marginBottom: 10,
+  },
+  spaceshipItemContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  modelName: {
+    fontWeight: "bold",
+    width: 200,
+    fontSize: 16,
+  },
+  modelType: {
+    marginTop: 5,
+    fontSize: 14,
+    width: 200,
+  },
+  availableStatus: {
+    paddingTop: 10,
+    color: "green",
+  },
+  unavailable: {
+    paddingTop: 10,
+    color: "red",
+  },
+  amount: {
+    paddingTop: 10,
+    fontWeight: "bold",
+  },
+});
+
+function List({ navigation }) {
   const { spaceships } = useDataContext();
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-
-    spaceshipHeading: {
-      marginTop: 80,
-      marginLeft: 20,
-      fontSize: 25,
-      fontWeight: "bold",
-    },
-    spaceshipItem: {
-      marginLeft: 15,
-      marginRight: 15,
-      marginTop: 5,
-      marginBottom: 10,
-    },
-    spaceshipItemContainer: {
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-    },
-    modelName: {
-      fontWeight: "bold",
-      width: 200,
-      fontSize: 16,
-    },
-    modelType: {
-      marginTop: 5,
-      fontSize: 14,
-      width: 200,
-    },
-    availableStatus: {
-      paddingTop: 10,
-      color: "green",
-    },
-    unavailable: {
-      paddingTop: 10,
-      color: "red",
-    },
-    amount: {
-      paddingTop: 10,
-      fontWeight: "bold",
-    },
-  });
 
   return (
     <View style={styles.container}>
-      <Text style={styles.spaceshipHeading}>My Spaceships</Text>
-      <Divider style={{ marginTop: 30, width: "100%", marginBottom: 20 }} />
       <ScrollView>
         {spaceships.length > 0 ? (
           spaceships.map((item) => {
