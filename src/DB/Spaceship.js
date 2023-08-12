@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 export default class Spaceship {
   constructor({
     id,
@@ -8,7 +7,9 @@ export default class Spaceship {
     type,
     price,
     available,
+    // eslint-disable-next-line camelcase
     rent_from,
+    // eslint-disable-next-line camelcase
     rent_to,
     src,
     rating,
@@ -20,7 +21,9 @@ export default class Spaceship {
     this.type = type;
     this.price = price;
     this.available = available;
+    // eslint-disable-next-line camelcase
     this.rentFrom = rent_from;
+    // eslint-disable-next-line camelcase
     this.rentTo = rent_to;
     this.src = src;
     this.rating = rating;
