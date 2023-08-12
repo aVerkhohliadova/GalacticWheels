@@ -22,7 +22,7 @@ const SpaceshipDetail = ({ route }) => {
       position: "relative",
     },
     modelName: {
-      fontSize: 35,
+      fontSize: 25,
       fontWeight: "bold",
       marginTop: 20,
     },
@@ -65,8 +65,14 @@ const SpaceshipDetail = ({ route }) => {
       marginLeft: 15,
       fontSize: 30,
       backgroundColor: "#AFB4BE",
-      padding: 14,
-      borderRadius: "50%",
+      height: 40,
+      width: 40,
+      textAlign: "center",
+      borderRadius: "100%",
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
     },
     itemDetailHeadingContainer: {
       display: "flex",
@@ -92,16 +98,16 @@ const SpaceshipDetail = ({ route }) => {
   return (
     <>
       <View>
-        <Image source={{ uri: item.photo }} style={styles.image} />
+        <Image source={{ uri: item.src }} style={styles.image} />
         <TouchableOpacity style={styles.backButton} onPress={goBackToList}>
-          <Icon name="arrow-left" size={25} color="#123A65" />
+          <Text style={{ fontSize: 30, color: "#123A65" }}>&#8249;</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <View style={styles.itemDetailHeadingContainer}>
           <View style={{ marginLeft: 10, marginRight: 10 }}>
-            <Text style={styles.modelName}>{item.modelName}</Text>
-            <Text style={styles.modelType}>{item.modelType}</Text>
+            <Text style={styles.modelName}>{item.title}</Text>
+            <Text style={styles.modelType}>{item.type}</Text>
           </View>
           <View
             style={{
@@ -125,22 +131,15 @@ const SpaceshipDetail = ({ route }) => {
         </Text>
 
         <View style={styles.container}>
-          <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 5 }}>
             Description
           </Text>
-          <Text style={{ marginTop: 5 }}>
-            The Starseeker I is a sleek and nimble spaceship designed for deep
-            space exploration. Equipped with advanced sensors and a spacious
-            observation deck, it's perfect for scientists and adventurers
-            seeking to uncover the mysteries of the universe. The ship's modular
-            design allows for easy customization, making it a popular choice
-            among explorers.
-          </Text>
+          <Text style={{ marginTop: 5 }}>{item.description}</Text>
         </View>
         <View style={{ marginTop: 20, marginLeft: 10, marginRight: 10 }}>
           <Text style={{ fontSize: 18, fontWeight: "bold" }}>Rental Price</Text>
           <Text style={{ marginTop: 5, fontWeight: "bold", color: "#123A65" }}>
-            <Text style={styles.cadText}>CAD $</Text> {item.amount}
+            <Text style={styles.cadText}>CAD $ {item.price}</Text> {item.amount}
           </Text>
         </View>
 
