@@ -11,98 +11,74 @@ import useDataContext from "../api/dataContext";
 import { Divider, Card } from "react-native-paper";
 
 const List = ({ navigation }) => {
-  // const { user, isLoading } = useDataContext();
+  const { user, isLoading } = useDataContext();
 
   const spaceshipsList = [
     {
       id: 0,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Available",
+      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
+      title: "Lambda-class Imperial Shuttle",
+      subtitle: "Empire transport, moderate defense.",
+      description:
+        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
+      type: "Lambda-class Shuttle",
+      price: "800,000",
+      available: true,
     },
     {
       id: 1,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Unavailable",
+      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
+      title: "Lambda-class Imperial Shuttle",
+      subtitle: "Empire transport, moderate defense.",
+      description:
+        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
+      type: "Lambda-class Shuttle",
+      price: "800,000",
+      available: false,
     },
     {
       id: 2,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Available",
+      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
+      title: "Lambda-class Imperial Shuttle",
+      subtitle: "Empire transport, moderate defense.",
+      description:
+        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
+      type: "Lambda-class Shuttle",
+      price: "800,000",
+      available: true,
     },
     {
       id: 3,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Unavailable",
+      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
+      title: "Lambda-class Imperial Shuttle",
+      subtitle: "Empire transport, moderate defense.",
+      description:
+        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
+      type: "Lambda-class Shuttle",
+      price: "800,000",
+      available: false,
     },
     {
       id: 4,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Available",
+      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
+      title: "Lambda-class Imperial Shuttle",
+      subtitle: "Empire transport, moderate defense.",
+      description:
+        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
+      type: "Lambda-class Shuttle",
+      price: "800,000",
+      available: true,
     },
     {
       id: 5,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Unavailable",
-    },
-    {
-      id: 6,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Unavailable",
-    },
-    {
-      id: 7,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Available",
-    },
-    {
-      id: 8,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Unavailable",
-    },
-    {
-      id: 9,
-      photo:
-        "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      modelName: "Riot",
-      modelType: "Sci-Fi Spaceship",
-      amount: "230.34",
-      status: "Unavailable",
+      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
+      title: "Lambda-class Imperial Shuttle",
+      subtitle: "Empire transport, moderate defense.",
+      description:
+        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
+      type: "Lambda-class Shuttle",
+      price: "800,000",
+      available: false,
     },
   ];
 
@@ -131,7 +107,7 @@ const List = ({ navigation }) => {
     },
     modelName: {
       fontWeight: "bold",
-      fontSize: 18,
+      fontSize: 16,
     },
     modelType: {
       marginTop: 5,
@@ -168,12 +144,12 @@ const List = ({ navigation }) => {
                     <View style={styles.spaceshipItemContainer}>
                       <View>
                         <Text variant="titleLarge" style={styles.modelName}>
-                          {item.modelName}
+                          {item.title}
                         </Text>
                         <Text variant="bodyMedium" style={styles.modelType}>
-                          {item.modelType}
+                          {item.type}
                         </Text>
-                        <Text style={styles.amount}>${item.amount} / day</Text>
+                        <Text style={styles.amount}>${item.price} / day</Text>
                         <View
                           style={{
                             display: "flex",
@@ -183,12 +159,12 @@ const List = ({ navigation }) => {
                         >
                           <Text
                             style={
-                              item.status == "Available"
+                              item.available
                                 ? styles.availableStatus
                                 : styles.unavailable
                             }
                           >
-                            {item.status}
+                            { item.available ? "Available" : "Unavailable"}
                           </Text>
                           <Text
                             style={{
@@ -203,7 +179,7 @@ const List = ({ navigation }) => {
                       </View>
 
                       <Image
-                        source={{ uri: item.photo }}
+                        source={{ uri: item.src }}
                         style={{
                           width: 70,
                           height: 70,
