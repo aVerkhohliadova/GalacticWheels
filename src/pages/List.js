@@ -1,4 +1,3 @@
-import React from "react";
 import {
   View,
   Text,
@@ -7,11 +6,11 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import useDataContext from "../api/dataContext";
+// import useDataContext from "../api/dataContext";
 import { Divider, Card } from "react-native-paper";
 
-const List = ({ navigation }) => {
-  const { user, isLoading } = useDataContext();
+function List({ navigation }) {
+  // const { user, isLoading } = useDataContext();
 
   const spaceshipsList = [
     {
@@ -200,6 +199,6 @@ const List = ({ navigation }) => {
       </ScrollView>
     </View>
   );
-};
+}
 
 export default List;

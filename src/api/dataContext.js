@@ -12,11 +12,9 @@ import { COLLECTION, get, getAll, update } from "./firestore";
 const ctx = createContext();
 
 export function DataContext({ children }) {
-  // Add new state here only if it's data is being used app-wide,
-  // else keep it in it's own pages
   const [isLoadingContext, setIsLoading] = useState(true);
   const [user, _setUser] = useState();
-  const [spaceships, setSpaceships] = useState([]);
+  const [spaceships, _setSpaceships] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -29,7 +27,8 @@ export function DataContext({ children }) {
       }
 
       const spaceships = await getAll(COLLECTION.SPACESHIPS);
-      setSpaceships(spaceships);
+      if (!spaceships) throw Error("Spaceships not found!");
+      _setSpaceships(spaceships);
 
       setIsLoading(false);
     })();
@@ -44,6 +43,15 @@ export function DataContext({ children }) {
     update(COLLECTION.USERS, user.id, user);
   }, []);
 
+  // Untested code
+  const updateSpaceshipData = useCallback((updatedShip) => {
+    _setSpaceships((spaceships) => [
+      ...spaceships.filter((s) => s.id !== updatedShip.id),
+      updatedShip,
+    ]);
+    update(COLLECTION.SPACESHIPS, updatedShip.id, updatedShip);
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -51,8 +59,16 @@ export function DataContext({ children }) {
       spaceships,
       isLoadingContext,
       updateUserData,
+      updateSpaceshipData,
     }),
-    [user, setUser, spaceships, isLoadingContext, updateUserData]
+    [
+      user,
+      setUser,
+      spaceships,
+      isLoadingContext,
+      updateUserData,
+      updateSpaceshipData,
+    ]
   );
 
   return <ctx.Provider value={value}>{children}</ctx.Provider>;
