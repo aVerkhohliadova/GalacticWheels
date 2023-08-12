@@ -1,9 +1,9 @@
 import { ActivityIndicator, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { PaperProvider } from "react-native-paper";
 import useDataContext, { DataContext } from "./src/api/dataContext";
 import { Home, List, Login, Orders, Profile, Signup } from "./src/pages";
-import { PaperProvider } from 'react-native-paper';
 import SpaceshipDetail from "./src/pages/SpaceshipDetail";
 
 const Stack = createNativeStackNavigator();
@@ -21,27 +21,32 @@ function Router() {
 
   return (
     <PaperProvider>
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
-          <>
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Profile" component={Profile} />
-            <Stack.Screen name="Orders" component={Orders} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Signup" component={Signup} />
-            <Stack.Screen name="Home" component={Home} />
-            {/* <Stack.Screen name="Profile" component={Profile} /> */}
-            {/* <Stack.Screen name="Orders" component={Orders} /> */}
-            <Stack.Screen name="My Spaceships"  component={List} />
-            <Stack.Screen name="SpaceshipDetail"  component={SpaceshipDetail} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="My Spaceships">
+          {user ? (
+            <>
+              <Stack.Screen name="Profile" component={Profile} />
+              <Stack.Screen name="Orders" component={Orders} />
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen
+                name="My Spaceships"
+                component={List}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="SpaceshipDetail"
+                component={SpaceshipDetail}
+                options={{ headerShown: false }}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="Signup" component={Signup} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
     </PaperProvider>
   );
 }
