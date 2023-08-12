@@ -13,12 +13,12 @@ export default function Home({ navigation }) {
   return (
     <View
       style={{
-        flex: 1,
-        backgroundColor: "#fff",
+        marginTop: 70,
         alignItems: "center",
         justifyContent: "center",
       }}
     >
+
       <Text>Logged in as {user.email}</Text>
       <Text>Currently, name is: {user.name}, try sample button below </Text>
 
