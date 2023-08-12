@@ -9,77 +9,8 @@ import {
 // import useDataContext from "../api/dataContext";
 import { Divider, Card } from "react-native-paper";
 
-function List({ navigation }) {
-  // const { user, isLoading } = useDataContext();
-
-  const spaceshipsList = [
-    {
-      id: 0,
-      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      title: "Lambda-class Imperial Shuttle",
-      subtitle: "Empire transport, moderate defense.",
-      description:
-        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
-      type: "Lambda-class Shuttle",
-      price: "800,000",
-      available: true,
-    },
-    {
-      id: 1,
-      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      title: "Lambda-class Imperial Shuttle",
-      subtitle: "Empire transport, moderate defense.",
-      description:
-        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
-      type: "Lambda-class Shuttle",
-      price: "800,000",
-      available: false,
-    },
-    {
-      id: 2,
-      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      title: "Lambda-class Imperial Shuttle",
-      subtitle: "Empire transport, moderate defense.",
-      description:
-        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
-      type: "Lambda-class Shuttle",
-      price: "800,000",
-      available: true,
-    },
-    {
-      id: 3,
-      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      title: "Lambda-class Imperial Shuttle",
-      subtitle: "Empire transport, moderate defense.",
-      description:
-        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
-      type: "Lambda-class Shuttle",
-      price: "800,000",
-      available: false,
-    },
-    {
-      id: 4,
-      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      title: "Lambda-class Imperial Shuttle",
-      subtitle: "Empire transport, moderate defense.",
-      description:
-        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
-      type: "Lambda-class Shuttle",
-      price: "800,000",
-      available: true,
-    },
-    {
-      id: 5,
-      src: "https://media.istockphoto.com/id/1190295119/photo/unidentified-flying-object-clipping-path-included.jpg?s=612x612&w=0&k=20&c=2CGLdoTGZ1eTrsKYxlydbcj6-UaGt-hiStjW1J-LYXU=",
-      title: "Lambda-class Imperial Shuttle",
-      subtitle: "Empire transport, moderate defense.",
-      description:
-        "About 66 feet (20 meters) long, this relatively little guy packs a punch thanks to cannons, hyperdrive and a host of famous users, from Darth Vader to Luke Skywalker, who uses one to escape Death Star II in Star Wars: Return of the Jedi.",
-      type: "Lambda-class Shuttle",
-      price: "800,000",
-      available: false,
-    },
-  ];
+const List = ({ navigation }) => {
+  const { spaceships } = useDataContext();
 
   const styles = StyleSheet.create({
     container: {
@@ -106,11 +37,13 @@ function List({ navigation }) {
     },
     modelName: {
       fontWeight: "bold",
+      width: 200,
       fontSize: 16,
     },
     modelType: {
       marginTop: 5,
       fontSize: 14,
+      width: 200,
     },
     availableStatus: {
       paddingTop: 10,
@@ -131,8 +64,8 @@ function List({ navigation }) {
       <Text style={styles.spaceshipHeading}>My Spaceships</Text>
       <Divider style={{ marginTop: 30, width: "100%", marginBottom: 20 }} />
       <ScrollView>
-        {spaceshipsList.length > 0 ? (
-          spaceshipsList.map((item) => {
+        {spaceships.length > 0 ? (
+          spaceships.map((item) => {
             return (
               <TouchableOpacity
                 key={item.id}
@@ -163,7 +96,7 @@ function List({ navigation }) {
                                 : styles.unavailable
                             }
                           >
-                            { item.available ? "Available" : "Unavailable"}
+                            {item.available ? "Available" : "Unavailable"}
                           </Text>
                           <Text
                             style={{

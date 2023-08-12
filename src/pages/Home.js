@@ -18,7 +18,6 @@ export default function Home({ navigation }) {
         justifyContent: "center",
       }}
     >
-
       <Text>Logged in as {user.email}</Text>
       <Text>Currently, name is: {user.name}, try sample button below </Text>
 
@@ -29,6 +28,11 @@ export default function Home({ navigation }) {
       <Button
         title="View Profile"
         onPress={() => navigation.navigate("Profile")}
+      />
+
+      <Button
+        title="Spaceships"
+        onPress={() => navigation.navigate("My Spaceships")}
       />
       <Button title="Logout" onPress={onLogout} />
     </View>

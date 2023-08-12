@@ -25,10 +25,12 @@ const SpaceshipDetail = ({ route }) => {
       fontSize: 25,
       fontWeight: "bold",
       marginTop: 20,
+      width: 200,
     },
     modelType: {
       fontSize: 18,
       marginTop: 5,
+      width: 200,
     },
     amount: {
       fontSize: 16,
@@ -118,7 +120,7 @@ const SpaceshipDetail = ({ route }) => {
           >
             <Icon name="star" size={30} color="#FFD700" />
             <Text style={{ marginLeft: 5, fontSize: 20, fontWeight: "bold" }}>
-              4.5
+              {item.rating}
             </Text>
           </View>
         </View>

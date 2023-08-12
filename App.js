@@ -22,12 +22,12 @@ function Router() {
   return (
     <PaperProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="My Spaceships">
+        <Stack.Navigator>
           {user ? (
             <>
+              <Stack.Screen name="Home" component={Home} />
               <Stack.Screen name="Profile" component={Profile} />
               <Stack.Screen name="Orders" component={Orders} />
-              <Stack.Screen name="Home" component={Home} />
               <Stack.Screen
                 name="My Spaceships"
                 component={List}
