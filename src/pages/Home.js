@@ -12,18 +12,17 @@ export default function Home({ navigation }) {
   return (
     <View
       style={{
-        flex: 1,
-        backgroundColor: "#fff",
+        marginTop: 70,
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <Text>This is home screen</Text>
+      <Text>MY SPACESHIP WORLD!!</Text>
 
-      <Button
-                title="View Profile"
-                onPress={() => navigation.navigate("Profile")} // Navigate to Profile page
-            />
+      {/* <Button
+        title="View Profile"
+        onPress={() => navigation.navigate("Profile")} // Navigate to Profile page
+      /> */}
     </View>
   );
 }
