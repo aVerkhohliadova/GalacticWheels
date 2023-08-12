@@ -9,10 +9,10 @@ import SpaceshipDetail from "./src/pages/SpaceshipDetail";
 const Stack = createNativeStackNavigator();
 
 function Router() {
-  const { user, isLoading } = useDataContext();
+  const { user, isLoadingContext } = useDataContext();
 
   // NOTE: Maybe splash screen here?
-  if (isLoading)
+  if (isLoadingContext)
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <ActivityIndicator />
@@ -38,7 +38,6 @@ function Router() {
             {/* <Stack.Screen name="Orders" component={Orders} /> */}
             <Stack.Screen name="My Spaceships"  component={List} />
             <Stack.Screen name="SpaceshipDetail"  component={SpaceshipDetail} />
-
           </>
         )}
       </Stack.Navigator>
