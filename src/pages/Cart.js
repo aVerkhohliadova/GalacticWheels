@@ -127,7 +127,7 @@ export default function Cart({ navigation }) {
 
 	const onCheckoutPress = () => {
 		navigation.navigate('Checkout');
-	}
+	};
 
 	return (
 		<View style={styles.container}>
@@ -143,6 +143,8 @@ export default function Cart({ navigation }) {
 											display: 'flex',
 											flexDirection: 'row',
 											flex: 1,
+											borderBottomColor: '#eaeaea',
+											borderBottomWidth: 1,
 										}}>
 										<View style={styles.item}>
 											<View>
@@ -330,8 +332,6 @@ const styles = StyleSheet.create({
 	item: {
 		flex: 1,
 		padding: 16,
-		borderBottomColor: '#eaeaea',
-		borderBottomWidth: 1,
 		display: 'flex',
 		flexDirection: 'row',
 		alignItems: 'center',
