@@ -1,91 +1,132 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Image, View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
-import { FontAwesome, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import useDataContext from '../api/dataContext';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default function Cart() {
+export default function Cart({ navigation }) {
+	const { user, updateUserData } = useDataContext();
+	const { spaceships } = useDataContext();
 	let [cartItems, setCartItems] = useState([]);
 	let [deleteModalVisible, setDeleteModalVisible] = useState(false);
-	let [deleteItem, setDeleteItem] = useState();
+	let [editModalVisible, setEditModalVisible] = useState(false);
+	let [selectedItem, setSelectedItem] = useState();
+	let [editDate, setEditDate] = useState({
+		startDate: new Date(),
+		endDate: new Date(),
+	});
 
 	useEffect(() => {
-		// TODO: api call to get cart items
-		setCartItems([
-			{
-				id: '1',
-				name: '2003 Formula',
-				price: '1999.99',
-				quantity: '1',
-				imageUrl:
-					'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			},
-			{
-				id: '2',
-				name: '2003 Formula 2',
-				price: '1999.99',
-				quantity: '1',
-				imageUrl:
-					'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			},
-			{
-				id: '3',
-				name: '2003 Formula 3',
-				price: '3000.00',
-				quantity: '2',
-				imageUrl:
-					'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			},
-			// {
-			// 	id: '4',
-			// 	name: '2003 Formula 3',
-			// 	price: '3000.00',
-			// 	quantity: '2',
-			// 	imageUrl:
-			// 		'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			// },
-			// {
-			// 	id: '5',
-			// 	name: '2003 Formula 3',
-			// 	price: '3000.00',
-			// 	quantity: '2',
-			// 	imageUrl:
-			// 		'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			// },
-			// {
-			// 	id: '6',
-			// 	name: '2003 Formula 3',
-			// 	price: '3000.00',
-			// 	quantity: '2',
-			// 	imageUrl:
-			// 		'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			// },
-			// {
-			// 	id: '7',
-			// 	name: '2003 Formula 3',
-			// 	price: '3000.00',
-			// 	quantity: '2',
-			// 	imageUrl:
-			// 		'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			// },
-		]);
+		prepareCartData();
 	}, []);
 
+	const prepareCartData = () => {
+		const items = [];
+		user.cart.forEach((item) => {
+			if (spaceships.findIndex((i) => i.id === item.spaceshipId) > -1) {
+				const spaceship = spaceships[spaceships.findIndex((i) => i.id === item.spaceshipId)];
+				items.push({
+					...item,
+					title: spaceship.title,
+					subtitle: spaceship.subtitle,
+					src: spaceship.src,
+					price: spaceship.price,
+					totalPrice: getItemPrice(item.rent_from, item.rent_to, spaceship.price),
+				});
+			}
+		});
+		setTimeout(() => {
+			setCartItems(items);
+		}, 500);
+	};
+
 	const showDeleteModal = (item) => {
-		setDeleteItem(item);
+		setSelectedItem(item);
 		setDeleteModalVisible(true);
 	};
 
+	const showEditModal = (item) => {
+		const startDate = new Date(item.rent_from);
+		const endDate = new Date(item.rent_to);
+
+		// // Date issue due to timezone so adding one day
+		// // Add one day to the start date
+		// startDate.setDate(startDate.getDate() + 1);
+
+		// // Add one day to the end date
+		// endDate.setDate(endDate.getDate() + 1);
+
+		setEditDate({
+			startDate: startDate,
+			endDate: endDate,
+		});
+		setSelectedItem(item);
+		setEditModalVisible(true);
+	};
+
+	const onStartDatePickerChange = ({ type }, selectedDate) => {
+		if (type == 'set') {
+			setEditDate({
+				...editDate,
+				startDate: selectedDate,
+			});
+		}
+	};
+
+	const onEndDatePickerChange = ({ type }, selectedDate) => {
+		if (type == 'set') {
+			setEditDate({
+				...editDate,
+				endDate: selectedDate,
+			});
+		}
+	};
+
+	const editItem = () => {
+		const newCartItems = [
+			...user.cart.map((i) => {
+				if (i.spaceshipId === selectedItem.spaceshipId) {
+					return {
+						...i,
+						rent_from: editDate.startDate.toISOString().split('T')[0],
+						rent_to: editDate.endDate.toISOString().split('T')[0],
+					};
+				}
+				return i;
+			}),
+		];
+		updateUserData({
+			...user,
+			cart: newCartItems,
+		});
+		prepareCartData();
+		setEditModalVisible(false);
+	};
+
 	const removeItemFromCart = () => {
-		// TODO: api call to remove item from cart
-		const newCart = [...cartItems.filter((i) => i.id !== deleteItem.id)];
-		setCartItems(newCart);
+		const newCartItems = [...user.cart.filter((i) => i.spaceshipId !== selectedItem.spaceshipId)];
+		updateUserData({
+			...user,
+			cart: newCartItems,
+		});
 		setDeleteModalVisible(false);
 	};
 
 	const getTotalPrice = () => {
 		const totalPrice = cartItems.reduce((total, val) => {
-			return total + Number(val.price);
+			return total + Number(val.totalPrice);
 		}, 0);
 		return totalPrice.toFixed(2);
+	};
+
+	const getItemPrice = (rent_from, rent_to, price) => {
+		const rentFrom = Date.parse(rent_from);
+		const rentTo = Date.parse(rent_to);
+		return price * Math.ceil((rentTo - rentFrom) / (1000 * 3600 * 24));
+	};
+
+	const onCheckoutPress = () => {
+		navigation.navigate('Checkout');
 	};
 
 	return (
@@ -96,50 +137,69 @@ export default function Cart() {
 						<View style={styles.items}>
 							{cartItems.map((item) => {
 								return (
-									<View key={item.id} style={styles.item}>
-										<View>
-											<Image
-												style={styles.item.img}
-												source={{
-													uri: item.imageUrl,
-												}}
-											/>
-										</View>
-										<View style={styles.item.detail}>
-											<View
-												style={{
-													display: 'flex',
-													flexDirection: 'row',
-													justifyContent: 'space-between',
-												}}>
-												<View style={{ flex: 1 }}>
-													<Text numberOfLines={1} style={styles.item.itemName}>
-														{item.name}
-													</Text>
-													<Text style={styles.item.itemSub}>White</Text>
+									<View
+										key={item.spaceshipId}
+										style={{
+											display: 'flex',
+											flexDirection: 'row',
+											flex: 1,
+											borderBottomColor: '#eaeaea',
+											borderBottomWidth: 1,
+										}}>
+										<View style={styles.item}>
+											<View>
+												<Image
+													style={styles.item.img}
+													source={{
+														uri: item.src,
+													}}
+												/>
+											</View>
+											<View style={styles.item.detail}>
+												<View
+													style={{
+														display: 'flex',
+														flexDirection: 'row',
+														justifyContent: 'space-between',
+													}}>
+													<View style={{ flex: 1 }}>
+														<Text numberOfLines={1} style={styles.item.itemName}>
+															{item.title}
+														</Text>
+														<Text style={styles.item.itemSub}>{item.subtitle}</Text>
+													</View>
 												</View>
+												<View
+													style={{
+														display: 'flex',
+														flexDirection: 'row',
+														alignItems: 'center',
+													}}>
+													<Text style={styles.date}>{item.rent_from}</Text>
+													<Text style={styles.dateLabel}>To</Text>
+													<Text style={styles.date}>{item.rent_to}</Text>
+												</View>
+												<View>
+													<Text style={styles.item.price}>$ {item.totalPrice}</Text>
+												</View>
+											</View>
+										</View>
+										<View>
+											<View style={styles.item.actionBtns}>
+												<TouchableOpacity
+													onPress={() => {
+														showEditModal(item);
+													}}>
+													<FontAwesome name="edit" size={24} color="green" />
+												</TouchableOpacity>
+											</View>
+											<View style={styles.item.actionBtns}>
 												<TouchableOpacity
 													onPress={() => {
 														showDeleteModal(item);
 													}}>
-													<Entypo name="cross" size={24} color="red" />
+													<FontAwesome name="trash" size={24} color="red" />
 												</TouchableOpacity>
-											</View>
-											<View style={styles.item.priceQuantity}>
-												<Text style={styles.item.price}>$ {item.price}</Text>
-												<View style={styles.item.quantityDiv}>
-													<TouchableOpacity>
-														<View style={styles.item.roundBtn}>
-															<FontAwesome name="minus" size={14} color="black" />
-														</View>
-													</TouchableOpacity>
-													<Text style={styles.item.quantity}>{item.quantity}</Text>
-													<TouchableOpacity>
-														<View style={styles.item.roundBtn}>
-															<FontAwesome name="plus" size={14} color="black" />
-														</View>
-													</TouchableOpacity>
-												</View>
 											</View>
 										</View>
 									</View>
@@ -152,7 +212,7 @@ export default function Cart() {
 							<Text style={styles.subTotal}>$ {getTotalPrice()}</Text>
 						</View>
 						<View>
-							<TouchableOpacity style={styles.checkouBtn}>
+							<TouchableOpacity style={styles.checkouBtn} onPress={onCheckoutPress}>
 								<Text style={styles.checkouBtn.text}>Checkout</Text>
 							</TouchableOpacity>
 						</View>
@@ -177,7 +237,7 @@ export default function Cart() {
 					<View style={styles.modalView}>
 						<Text style={styles.modalView.modalHeader}>{'Delete Item'}</Text>
 						<View style={styles.modalView.modalBody}>
-							<Text>Are you sure you wnat to delete item {deleteItem?.name}?</Text>
+							<Text>Are you sure you wnat to delete item {selectedItem?.title}?</Text>
 						</View>
 						<View style={styles.modalView.buttonDiv}>
 							<TouchableOpacity style={styles.modalView.button} onPress={removeItemFromCart}>
@@ -194,6 +254,54 @@ export default function Cart() {
 					</View>
 				</View>
 			</Modal>
+
+			{/* edit modal */}
+			<Modal
+				animationType="slide"
+				transparent={true}
+				visible={editModalVisible}
+				onRequestClose={() => {
+					setEditModalVisible(!editModalVisible);
+				}}>
+				<View style={styles.centeredView}>
+					<View style={styles.modalView}>
+						<Text style={styles.modalView.modalHeader}>{selectedItem?.title}</Text>
+						<View style={styles.modalView.modalBody}>
+							<View
+								style={{
+									display: 'flex',
+									flexDirection: 'row',
+									alignItems: 'center',
+								}}>
+								<Text style={{ minWidth: 40 }}>From</Text>
+								<DateTimePicker value={editDate.startDate} onChange={onStartDatePickerChange} />
+							</View>
+							<View
+								style={{
+									display: 'flex',
+									flexDirection: 'row',
+									alignItems: 'center',
+									marginTop: 10,
+								}}>
+								<Text style={{ minWidth: 40 }}>To</Text>
+								<DateTimePicker value={editDate.endDate} onChange={onEndDatePickerChange} />
+							</View>
+						</View>
+						<View style={styles.modalView.buttonDiv}>
+							<TouchableOpacity style={styles.modalView.button} onPress={editItem}>
+								<Text style={styles.modalView.button.textStyle}>Edit</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[styles.modalView.button, styles.modalView.buttonCancel]}
+								onPress={() => {
+									setEditModalVisible(false);
+								}}>
+								<Text style={styles.modalView.button.textStyle}>Cancel</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			</Modal>
 		</View>
 	);
 }
@@ -201,7 +309,7 @@ export default function Cart() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 24,
+		padding: 16,
 		backgroundColor: '#eaeaea',
 	},
 	scrollView: {
@@ -211,12 +319,22 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fff',
 		borderRadius: 12,
 	},
+	dateLabel: {
+		marginStart: 5,
+		marginEnd: 5,
+	},
+	date: {
+		marginTop: 4,
+		borderWidth: 1,
+		padding: 2,
+		minWidth: 50,
+	},
 	item: {
+		flex: 1,
 		padding: 16,
-		borderBottomColor: '#eaeaea',
-		borderBottomWidth: 1,
 		display: 'flex',
 		flexDirection: 'row',
+		alignItems: 'center',
 		detail: {
 			flex: 1,
 			marginLeft: 20,
@@ -224,8 +342,8 @@ const styles = StyleSheet.create({
 			justifyContent: 'space-between',
 		},
 		img: {
-			width: 100,
-			height: 100,
+			width: 80,
+			height: 80,
 			borderRadius: 12,
 			resizeMode: 'cover',
 		},
@@ -251,17 +369,9 @@ const styles = StyleSheet.create({
 			color: 'grey',
 		},
 		price: {
+			marginTop: 8,
 			fontWeight: 'bold',
 			fontSize: 20,
-		},
-		roundBtn: {
-			width: 30,
-			height: 30,
-			borderWidth: 1,
-			display: 'flex',
-			alignItems: 'center',
-			justifyContent: 'center',
-			borderRadius: 15,
 		},
 		quantity: {
 			marginLeft: 10,
@@ -269,6 +379,21 @@ const styles = StyleSheet.create({
 			fontSize: 18,
 			fontWeight: 'bold',
 		},
+		actionBtns: {
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'center',
+			padding: 8,
+			flex: 1,
+		},
+	},
+	input: {
+		height: 30,
+		borderWidth: 1,
+		paddingStart: 10,
+		paddingEnd: 10,
+		paddingTop: 5,
+		paddingBottom: 5,
 	},
 	bottomView: {
 		display: 'flex',
