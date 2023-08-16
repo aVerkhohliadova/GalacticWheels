@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Image, View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import {
+	StyleSheet,
+	Image,
+	View,
+	Text,
+	TouchableOpacity,
+	ScrollView,
+	Modal,
+	ActivityIndicator,
+} from 'react-native';
 import { Entypo, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import useDataContext from '../api/dataContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function Cart({ navigation }) {
-	const { user, updateUserData } = useDataContext();
+	const { user, isLoadingContext, updateUserData } = useDataContext();
 	const { spaceships } = useDataContext();
 	let [cartItems, setCartItems] = useState([]);
 	let [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -35,9 +44,7 @@ export default function Cart({ navigation }) {
 				});
 			}
 		});
-		setTimeout(() => {
-			setCartItems(items);
-		}, 500);
+		setCartItems(items);
 	};
 
 	const showDeleteModal = (item) => {
@@ -126,183 +133,192 @@ export default function Cart({ navigation }) {
 	};
 
 	const onCheckoutPress = () => {
-		navigation.navigate('Checkout');
+		navigation.navigate('Checkout', { subTotal: getTotalPrice() });
 	};
 
 	return (
-		<View style={styles.container}>
-			{cartItems && cartItems.length !== 0 ? (
-				<>
-					<ScrollView style={styles.scrollView}>
-						<View style={styles.items}>
-							{cartItems.map((item) => {
-								return (
+		<>
+			{isLoadingContext ? (
+				<View style={styles.loadingContainer}>
+					<ActivityIndicator size="large" color="#1E90FF" />
+					<Text style={styles.loadingText}>Loading...</Text>
+				</View>
+			) : (
+				<View style={styles.container}>
+					{cartItems && cartItems.length !== 0 ? (
+						<>
+							<ScrollView style={styles.scrollView}>
+								<View style={styles.items}>
+									{cartItems.map((item) => {
+										return (
+											<View
+												key={item.spaceshipId}
+												style={{
+													display: 'flex',
+													flexDirection: 'row',
+													flex: 1,
+													borderBottomColor: '#eaeaea',
+													borderBottomWidth: 1,
+												}}>
+												<View style={styles.item}>
+													<View>
+														<Image
+															style={styles.item.img}
+															source={{
+																uri: item.src,
+															}}
+														/>
+													</View>
+													<View style={styles.item.detail}>
+														<View
+															style={{
+																display: 'flex',
+																flexDirection: 'row',
+																justifyContent: 'space-between',
+															}}>
+															<View style={{ flex: 1 }}>
+																<Text numberOfLines={1} style={styles.item.itemName}>
+																	{item.title}
+																</Text>
+																<Text style={styles.item.itemSub}>{item.subtitle}</Text>
+															</View>
+														</View>
+														<View
+															style={{
+																display: 'flex',
+																flexDirection: 'row',
+																alignItems: 'center',
+															}}>
+															<Text style={styles.date}>{item.rent_from}</Text>
+															<Text style={styles.dateLabel}>To</Text>
+															<Text style={styles.date}>{item.rent_to}</Text>
+														</View>
+														<View>
+															<Text style={styles.item.price}>$ {item.totalPrice}</Text>
+														</View>
+													</View>
+												</View>
+												<View>
+													<View style={styles.item.actionBtns}>
+														<TouchableOpacity
+															onPress={() => {
+																showEditModal(item);
+															}}>
+															<FontAwesome name="edit" size={24} color="green" />
+														</TouchableOpacity>
+													</View>
+													<View style={styles.item.actionBtns}>
+														<TouchableOpacity
+															onPress={() => {
+																showDeleteModal(item);
+															}}>
+															<FontAwesome name="trash" size={24} color="red" />
+														</TouchableOpacity>
+													</View>
+												</View>
+											</View>
+										);
+									})}
+								</View>
+							</ScrollView>
+							<View style={styles.bottomView}>
+								<View>
+									<Text style={styles.subTotal}>$ {getTotalPrice()}</Text>
+								</View>
+								<View>
+									<TouchableOpacity style={styles.checkouBtn} onPress={onCheckoutPress}>
+										<Text style={styles.checkouBtn.text}>Checkout</Text>
+									</TouchableOpacity>
+								</View>
+							</View>
+						</>
+					) : (
+						<View style={styles.centeredView}>
+							<MaterialCommunityIcons name="cart-remove" size={100} color="black" />
+							<Text>No item in cart.</Text>
+						</View>
+					)}
+
+					{/* Delete modal */}
+					<Modal
+						animationType="slide"
+						transparent={true}
+						visible={deleteModalVisible}
+						onRequestClose={() => {
+							setDeleteModalVisible(!deleteModalVisible);
+						}}>
+						<View style={styles.centeredView}>
+							<View style={styles.modalView}>
+								<Text style={styles.modalView.modalHeader}>{'Delete Item'}</Text>
+								<View style={styles.modalView.modalBody}>
+									<Text>Are you sure you wnat to delete item {selectedItem?.title}?</Text>
+								</View>
+								<View style={styles.modalView.buttonDiv}>
+									<TouchableOpacity style={styles.modalView.button} onPress={removeItemFromCart}>
+										<Text style={styles.modalView.button.textStyle}>YES</Text>
+									</TouchableOpacity>
+									<TouchableOpacity
+										style={[styles.modalView.button, styles.modalView.buttonCancel]}
+										onPress={() => {
+											setDeleteModalVisible(false);
+										}}>
+										<Text style={styles.modalView.button.textStyle}>NO</Text>
+									</TouchableOpacity>
+								</View>
+							</View>
+						</View>
+					</Modal>
+
+					{/* edit modal */}
+					<Modal
+						animationType="slide"
+						transparent={true}
+						visible={editModalVisible}
+						onRequestClose={() => {
+							setEditModalVisible(!editModalVisible);
+						}}>
+						<View style={styles.centeredView}>
+							<View style={styles.modalView}>
+								<Text style={styles.modalView.modalHeader}>{selectedItem?.title}</Text>
+								<View style={styles.modalView.modalBody}>
 									<View
-										key={item.spaceshipId}
 										style={{
 											display: 'flex',
 											flexDirection: 'row',
-											flex: 1,
-											borderBottomColor: '#eaeaea',
-											borderBottomWidth: 1,
+											alignItems: 'center',
 										}}>
-										<View style={styles.item}>
-											<View>
-												<Image
-													style={styles.item.img}
-													source={{
-														uri: item.src,
-													}}
-												/>
-											</View>
-											<View style={styles.item.detail}>
-												<View
-													style={{
-														display: 'flex',
-														flexDirection: 'row',
-														justifyContent: 'space-between',
-													}}>
-													<View style={{ flex: 1 }}>
-														<Text numberOfLines={1} style={styles.item.itemName}>
-															{item.title}
-														</Text>
-														<Text style={styles.item.itemSub}>{item.subtitle}</Text>
-													</View>
-												</View>
-												<View
-													style={{
-														display: 'flex',
-														flexDirection: 'row',
-														alignItems: 'center',
-													}}>
-													<Text style={styles.date}>{item.rent_from}</Text>
-													<Text style={styles.dateLabel}>To</Text>
-													<Text style={styles.date}>{item.rent_to}</Text>
-												</View>
-												<View>
-													<Text style={styles.item.price}>$ {item.totalPrice}</Text>
-												</View>
-											</View>
-										</View>
-										<View>
-											<View style={styles.item.actionBtns}>
-												<TouchableOpacity
-													onPress={() => {
-														showEditModal(item);
-													}}>
-													<FontAwesome name="edit" size={24} color="green" />
-												</TouchableOpacity>
-											</View>
-											<View style={styles.item.actionBtns}>
-												<TouchableOpacity
-													onPress={() => {
-														showDeleteModal(item);
-													}}>
-													<FontAwesome name="trash" size={24} color="red" />
-												</TouchableOpacity>
-											</View>
-										</View>
+										<Text style={{ minWidth: 40 }}>From</Text>
+										<DateTimePicker value={editDate.startDate} onChange={onStartDatePickerChange} />
 									</View>
-								);
-							})}
+									<View
+										style={{
+											display: 'flex',
+											flexDirection: 'row',
+											alignItems: 'center',
+											marginTop: 10,
+										}}>
+										<Text style={{ minWidth: 40 }}>To</Text>
+										<DateTimePicker value={editDate.endDate} onChange={onEndDatePickerChange} />
+									</View>
+								</View>
+								<View style={styles.modalView.buttonDiv}>
+									<TouchableOpacity style={styles.modalView.button} onPress={editItem}>
+										<Text style={styles.modalView.button.textStyle}>Edit</Text>
+									</TouchableOpacity>
+									<TouchableOpacity
+										style={[styles.modalView.button, styles.modalView.buttonCancel]}
+										onPress={() => {
+											setEditModalVisible(false);
+										}}>
+										<Text style={styles.modalView.button.textStyle}>Cancel</Text>
+									</TouchableOpacity>
+								</View>
+							</View>
 						</View>
-					</ScrollView>
-					<View style={styles.bottomView}>
-						<View>
-							<Text style={styles.subTotal}>$ {getTotalPrice()}</Text>
-						</View>
-						<View>
-							<TouchableOpacity style={styles.checkouBtn} onPress={onCheckoutPress}>
-								<Text style={styles.checkouBtn.text}>Checkout</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-				</>
-			) : (
-				<View style={styles.centeredView}>
-					<MaterialCommunityIcons name="cart-remove" size={100} color="black" />
-					<Text>No item in cart.</Text>
+					</Modal>
 				</View>
 			)}
-
-			{/* Delete modal */}
-			<Modal
-				animationType="slide"
-				transparent={true}
-				visible={deleteModalVisible}
-				onRequestClose={() => {
-					setDeleteModalVisible(!deleteModalVisible);
-				}}>
-				<View style={styles.centeredView}>
-					<View style={styles.modalView}>
-						<Text style={styles.modalView.modalHeader}>{'Delete Item'}</Text>
-						<View style={styles.modalView.modalBody}>
-							<Text>Are you sure you wnat to delete item {selectedItem?.title}?</Text>
-						</View>
-						<View style={styles.modalView.buttonDiv}>
-							<TouchableOpacity style={styles.modalView.button} onPress={removeItemFromCart}>
-								<Text style={styles.modalView.button.textStyle}>YES</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={[styles.modalView.button, styles.modalView.buttonCancel]}
-								onPress={() => {
-									setDeleteModalVisible(false);
-								}}>
-								<Text style={styles.modalView.button.textStyle}>NO</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-				</View>
-			</Modal>
-
-			{/* edit modal */}
-			<Modal
-				animationType="slide"
-				transparent={true}
-				visible={editModalVisible}
-				onRequestClose={() => {
-					setEditModalVisible(!editModalVisible);
-				}}>
-				<View style={styles.centeredView}>
-					<View style={styles.modalView}>
-						<Text style={styles.modalView.modalHeader}>{selectedItem?.title}</Text>
-						<View style={styles.modalView.modalBody}>
-							<View
-								style={{
-									display: 'flex',
-									flexDirection: 'row',
-									alignItems: 'center',
-								}}>
-								<Text style={{ minWidth: 40 }}>From</Text>
-								<DateTimePicker value={editDate.startDate} onChange={onStartDatePickerChange} />
-							</View>
-							<View
-								style={{
-									display: 'flex',
-									flexDirection: 'row',
-									alignItems: 'center',
-									marginTop: 10,
-								}}>
-								<Text style={{ minWidth: 40 }}>To</Text>
-								<DateTimePicker value={editDate.endDate} onChange={onEndDatePickerChange} />
-							</View>
-						</View>
-						<View style={styles.modalView.buttonDiv}>
-							<TouchableOpacity style={styles.modalView.button} onPress={editItem}>
-								<Text style={styles.modalView.button.textStyle}>Edit</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={[styles.modalView.button, styles.modalView.buttonCancel]}
-								onPress={() => {
-									setEditModalVisible(false);
-								}}>
-								<Text style={styles.modalView.button.textStyle}>Cancel</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-				</View>
-			</Modal>
-		</View>
+		</>
 	);
 }
 
@@ -311,6 +327,12 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 16,
 		backgroundColor: '#eaeaea',
+	},
+	loadingContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#FFFFFF',
 	},
 	scrollView: {
 		marginBottom: 80,
