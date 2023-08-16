@@ -58,8 +58,8 @@ export async function getAll(coll) {
   }
 }
 
-export async function update(collection, id, data) {
-  const docRef = doc(db, collection, id);
+export async function update(coll, id, data) {
+  const docRef = doc(db, coll, id);
   try {
     await updateDoc(docRef, data);
   } catch (error) {
