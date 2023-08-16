@@ -1,64 +1,79 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, View, Text, TouchableOpacity, Modal } from 'react-native';
+import {
+	StyleSheet,
+	TextInput,
+	View,
+	Text,
+	TouchableOpacity,
+	Modal,
+} from 'react-native';
+import useDataContext from '../api/dataContext';
 
-export default function Cart() {
-	const deliveryFee = 5;
-	let [cartItems, setCartItems] = useState([]);
+export default function Cart({ route, navigation }) {
+	const { user, updateUserData } = useDataContext();
 	let [confirmOrderModal, setConfirmOrderModal] = useState(false);
+	let [error, setError] = useState(false);
 	let [orderSuccessModal, setOrderSuccessModal] = useState(false);
-	let [address, setAddress] = useState('');
-	let [name, setName] = useState('');
-	let [phone, setPhone] = useState('');
+	let [shippingInfo, setShippingInfo] = useState({
+		name: '',
+		phone: '',
+		address: '',
+	});
+	let [paymentInfo, setPaymentInfo] = useState({
+		cardNo: '',
+		code: '',
+		expiryDate: '',
+	});
+
+	const { subTotal } = route.params;
 
 	useEffect(() => {
-		// TODO: get cart items
-		setCartItems([
-			{
-				id: '1',
-				name: '2003 Formula',
-				price: '1999.99',
-				quantity: '1',
-				imageUrl:
-					'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			},
-			{
-				id: '2',
-				name: '2003 Formula 2',
-				price: '1999.99',
-				quantity: '1',
-				imageUrl:
-					'https://images.unsplash.com/photo-1568347877321-f8935c7dc5a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80',
-			},
-		]);
+		setShippingInfo({
+			name: user.name,
+			phone: user.phone,
+			address: '',
+		});
 	}, []);
 
-	const getSubTotalPrice = () => {
-		const price = cartItems.reduce((total, val) => {
-			return total + Number(val.price);
-		}, 0);
-		return price.toFixed(2);
-	};
-
 	const getTotalPrice = () => {
-		return (Number(getSubTotalPrice()) + deliveryFee).toFixed(2);
+		return (Number(subTotal) * 1.13).toFixed(2);
 	};
 
 	const confirmOrder = () => {
 		const orderData = {
-			items: [...cartItems],
-			name,
-			phone,
-			address,
+			items: [...user.cart],
+			shippingInfo,
+			paymentInfo,
 		};
 		console.log(orderData);
-		// TODO: call api to confirm order
+		updateUserData({
+			...user,
+			cart: [],
+			orderHistory: orderData,
+		});
 
-		setConfirmOrderModal(false)
-		setOrderSuccessModal(true)
+		setConfirmOrderModal(false);
+		setOrderSuccessModal(true);
+	};
+
+	const openOrderConfirmModal = () => {
+		setError(false);
+		if (
+			shippingInfo.name === '' ||
+			shippingInfo.phone === '' ||
+			shippingInfo.address === '' ||
+			paymentInfo.cardNo === '' ||
+			paymentInfo.expiryDate === '' ||
+			paymentInfo.code === ''
+		) {
+			setError(true);
+			return;
+		}
+		setConfirmOrderModal(true);
 	};
 
 	const onHomePressed = () => {
-		// TODO: redirect to home
+		navigation.navigate('Home');
 	};
 
 	return (
@@ -70,8 +85,13 @@ export default function Cart() {
 					<TextInput
 						placeholder="Enter your Full Name"
 						style={styles.input}
-						onChangeText={setName}
-						value={name}
+						onChangeText={(value) => {
+							setShippingInfo({
+								...shippingInfo,
+								name: value,
+							});
+						}}
+						value={shippingInfo.name}
 					/>
 				</View>
 				<View style={{ marginTop: 10 }}>
@@ -79,8 +99,13 @@ export default function Cart() {
 					<TextInput
 						placeholder="Enter your Phone Number"
 						style={styles.input}
-						onChangeText={setPhone}
-						value={phone}
+						onChangeText={(value) => {
+							setShippingInfo({
+								...shippingInfo,
+								phone: value,
+							});
+						}}
+						value={shippingInfo.phone}
 					/>
 				</View>
 				<View style={{ marginTop: 10 }}>
@@ -88,25 +113,73 @@ export default function Cart() {
 					<TextInput
 						placeholder="Enter your Address"
 						style={styles.input}
-						onChangeText={setAddress}
-						value={address}
+						onChangeText={(value) => {
+							setShippingInfo({
+								...shippingInfo,
+								address: value,
+							});
+						}}
+						value={shippingInfo.address}
 					/>
 				</View>
 			</View>
 			<View style={styles.box}>
 				<Text style={styles.subTotal}>Payment</Text>
-				<Text style={{ marginTop: 10 }}>Type</Text>
-				<TextInput style={styles.inputDisabled} value={'Pay At Door'} editable={false} />
+				<View style={{ marginTop: 10 }}>
+					<Text>Card Number</Text>
+					<TextInput
+						placeholder="Card Number"
+						style={styles.input}
+						onChangeText={(value) => {
+							setPaymentInfo({
+								...paymentInfo,
+								cardNo: value,
+							});
+						}}
+						value={paymentInfo.cardNo}
+					/>
+				</View>
+				<View style={{ marginTop: 10, display: 'flex', flexDirection: 'row' }}>
+					<View style={{ flex: 1, marginRight: 20 }}>
+						<Text>Code</Text>
+						<TextInput
+							placeholder="Code"
+							style={styles.input}
+							onChangeText={(value) => {
+								setPaymentInfo({
+									...paymentInfo,
+									code: value,
+								});
+							}}
+							value={paymentInfo.code}
+						/>
+					</View>
+					<View style={{ flex: 1 }}>
+						<Text>Type</Text>
+						<TextInput
+							placeholder="Expiry Date"
+							style={styles.input}
+							onChangeText={(value) => {
+								setPaymentInfo({
+									...paymentInfo,
+									expiryDate: value,
+								});
+							}}
+							value={paymentInfo.expiryDate}
+						/>
+					</View>
+				</View>
 			</View>
+			{error && <Text style={{ fontSize: 12, color: 'red' }}>Please fill all the boxes.</Text>}
 			<View style={styles.bottomView}>
 				<View style={styles.summary}>
 					<View style={styles.summaryRow}>
 						<Text>Sub Total: </Text>
-						<Text style={styles.subTotal}>$ {getSubTotalPrice()}</Text>
+						<Text style={styles.subTotal}>$ {subTotal}</Text>
 					</View>
 					<View style={styles.summaryRow}>
-						<Text>Delivery Fee: </Text>
-						<Text style={styles.subTotal}>$ {deliveryFee.toFixed(2)}</Text>
+						<Text>HST: </Text>
+						<Text style={styles.subTotal}>$ {(Number(subTotal) * 0.13).toFixed(2)}</Text>
 					</View>
 					<View style={styles.summaryRow}>
 						<Text style={{ fontWeight: 'bold' }}>Total: </Text>
@@ -114,11 +187,7 @@ export default function Cart() {
 					</View>
 				</View>
 				<View style={{ padding: 20 }}>
-					<TouchableOpacity
-						style={styles.orderBtn}
-						onPress={() => {
-							setConfirmOrderModal(true);
-						}}>
+					<TouchableOpacity style={styles.orderBtn} onPress={openOrderConfirmModal}>
 						<Text style={styles.orderBtn.text}>Order</Text>
 					</TouchableOpacity>
 				</View>
@@ -175,7 +244,7 @@ export default function Cart() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 24,
+		padding: 16,
 		backgroundColor: '#eaeaea',
 	},
 	box: {
