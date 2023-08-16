@@ -84,6 +84,7 @@ export default function Login({ navigation }) {
           placeholder="Password"
           value={pass}
           onChangeText={setPass}
+          secureTextEntry
         />
         <Text style={{ fontSize: 12, fontWeight: "100", marginTop: 20 }}>
           {error}

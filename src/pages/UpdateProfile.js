@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text, StyleSheet, ActivityIndicator, StatusBar, TouchableOpacity, SafeAreaView } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, SafeAreaView } from "react-native";
 import useDataContext from "../api/dataContext";
 import Logo from "../components/Logo";
 
@@ -8,65 +8,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        marginTop: -120,
         width: "80%",
     },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#FFFFFF",
+    input: {
+        borderColor: "gray",
+        borderWidth: 1,
+        borderRadius: 5,
+        padding: 10,
+        width: 200,
+        margin: 10,
     },
-    loadingText: {
+    updateButton: {
         marginTop: 10,
-        color: "#1E90FF",
-    },
-    profileHeader: {
-        marginBottom: 40,
-        marginTop: -120,
-    },
-    headerText: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#333",
-    },
-    profileInfo: {
-        backgroundColor: "#F5F5F5",
-        padding: 20,
-        borderRadius: 10,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    infoContainer: {
-        flexDirection: "row",
-        paddingTop: 8,
-        paddingBottom: 8,
-    },
-    infoLabel: {
-        fontWeight: "bold",
-        marginRight: 8,
-        minWidth: 150,
-    },
-    infoValue: {
-        flex: 1,
-    },
-    viewOrderHistoryButton: {
-        marginTop: 30,
-        backgroundColor: "#123A65",
-        padding: 12,
-        borderRadius: 20,
-        width: "100%",
-    },
-    updateProfileButton: {
-        marginTop: 30,
         backgroundColor: "#5984b3",
         padding: 12,
         borderRadius: 20,
@@ -125,60 +79,86 @@ const formatPhoneNumber = (phoneNumber) => {
 
   };
 
-const Profile = ({ navigation }) => {
-    const { user, isLoading } = useDataContext();
+const UpdateProfile = ({ navigation }) => {
+    const { user, updateUserData, updatePassword } = useDataContext();
 
-    if (isLoading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#1E90FF" />
-                <Text style={styles.loadingText}>Loading...</Text>
-            </View>
-        );
-    }
+    const [name, setName] = useState(user.name);
+    const [phone, setPhone] = useState(user.phone);
+    const [email, setEmail] = useState(user.email);
+    const [newPassword, setNewPassword] = useState(""); // New password state
+    const [error, setError] = useState("");
+    const [editingPhone, setEditingPhone] = useState(false);
+
+    const handleUpdate = async () => {
+        setError("");
+        try {
+            updateUserData({ name, phone, email });
+            // Update password if newPassword is provided
+            if (newPassword) {
+                if (newPassword.length < 6) {
+                    setError("Please enter a (min 6 letter) password");
+                    return;
+                }
+                try {
+                    await updatePassword(newPassword);
+                    setNewPassword(""); // Reset newPassword state
+                } catch (error) {
+                    console.error("Error updating password:", error.message);
+                }
+            }
+        } catch (error) {
+            console.error("Error updating profile:", error.message);
+        }
+        navigation.goBack();
+    };
 
     return (
         <SafeAreaView
             style={{
                 flex: 1,
                 backgroundColor: "#fff",
-                justifyContent: "center",
                 alignItems: "center",
+                width: "100%",
             }}
         >
             <Logo />
             <View style={styles.container}>
-                <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-
-                <View style={styles.profileHeader}>
-                    <Text style={styles.headerText}>Welcome, {user.name}!</Text>
-                </View>
-                <View style={styles.profileInfo}>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoLabel}>Phone number</Text>
-                        <Text style={styles.infoValue}>{formatPhoneNumber(user.phone)}</Text>
-                    </View>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoLabel}>Email</Text>
-                        <Text style={styles.infoValue}>{user.email}</Text>
-                    </View>
-                </View>
-
-                <TouchableOpacity
-                    style={styles.viewOrderHistoryButton}
-                    onPress={() => navigation.navigate("Orders")}>
-                    <Text style={styles.buttonText}>VIEW ORDER HISTORY</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder={`Name`}
+                    value={name}
+                    onChangeText={setName}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder={`Phone`}
+                    value={editingPhone ? phone : formatPhoneNumber(phone)}
+                    onChangeText={setPhone}
+                    onFocus={() => setEditingPhone(true)} // Set editingPhone to true when editing starts
+                    onBlur={() => setEditingPhone(false)}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder={`Email`}
+                    value={email}
+                    onChangeText={setEmail}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder={`New Password`}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    secureTextEntry
+                />
+                <Text style={{ fontSize: 12, fontWeight: "100", marginTop: 20 }}>
+                    {error}
+                </Text>
+                <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+                    <Text style={styles.buttonText}>Update</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={styles.updateProfileButton}
-                    onPress={() => navigation.navigate("Update Personal Information")}>
-                    <Text style={styles.buttonText}>UPDATE PERSONAL INFORMATION</Text>
-                </TouchableOpacity>
-
             </View>
         </SafeAreaView>
     );
 };
 
-export default Profile;
+export default UpdateProfile;
