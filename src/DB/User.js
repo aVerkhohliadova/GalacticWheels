@@ -11,11 +11,11 @@ export default class User {
     this.cart = cart;
   }
 
-  addOrderToHistory(orderData) {
-    const order = new Order(orderData);
-    this.orderHistory.push(order);
-    // this._update();
-  }
+  // addOrderToHistory(orderData) {
+  //   const order = new Order(orderData);
+  //   this.orderHistory.push(order);
+  //   // this._update();
+  // }
 
   // async _add() {
   //   const id = await add(COLLECTION.USERS, this);

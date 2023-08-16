@@ -59,12 +59,15 @@ export async function getAll(coll) {
 }
 
 export async function update(coll, id, data) {
+  const docRef = doc(db, coll, id);
   try {
-    return await updateDoc(doc(db, coll, id), data);
-  } catch (e) {
-    throw e.message;
+    await updateDoc(docRef, data);
+  } catch (error) {
+    console.error("Firestore update error:", error);
+    throw error;
   }
 }
+
 
 export async function remove(coll, id) {
   try {

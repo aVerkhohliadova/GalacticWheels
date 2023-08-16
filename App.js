@@ -5,6 +5,7 @@ import { PaperProvider } from "react-native-paper";
 import useDataContext, { DataContext } from "./src/api/dataContext";
 import { Cart, Checkout, Home, List, Login, Orders, Profile, Signup } from "./src/pages";
 import SpaceshipDetail from "./src/pages/SpaceshipDetail";
+import UpdateProfile from "./src/pages/UpdateProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -40,6 +41,7 @@ function Router() {
                 component={SpaceshipDetail}
                 options={{ headerShown: false }}
               />
+              <Stack.Screen name="Update Personal Information" component={UpdateProfile}/>
             </>
           ) : (
             <>
