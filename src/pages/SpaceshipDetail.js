@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import useDataContext from "../api/dataContext";
 
 const styles = StyleSheet.create({
   container: {
@@ -97,10 +98,18 @@ const styles = StyleSheet.create({
 
 function SpaceshipDetail({ route }) {
   const { item } = route.params;
+  const { user, updateUserData } = useDataContext();
+
   const navigation = useNavigation();
 
   const goBackToList = () => {
     navigation.goBack();
+  };
+
+  const addToCart = () => {
+    updateUserData({
+      cart: [...user.cart, { id: item.id }],
+    });
   };
 
   return (
@@ -150,7 +159,7 @@ function SpaceshipDetail({ route }) {
         </View>
 
         {item.available && (
-          <TouchableOpacity style={styles.addButton}>
+          <TouchableOpacity style={styles.addButton} onPress={addToCart}>
             <Text style={styles.backButtonText}>ADD TO CART</Text>
           </TouchableOpacity>
         )}
