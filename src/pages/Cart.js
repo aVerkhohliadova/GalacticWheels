@@ -186,7 +186,7 @@ export default function Cart({ navigation }) {
 															onPress={() => {
 																showEditModal(item);
 															}}>
-															<FontAwesome name="edit" size={24} color="green" />
+															<FontAwesome name="edit" size={24} color="#123A65" />
 														</TouchableOpacity>
 													</View>
 													<View style={styles.item.actionBtns}>
@@ -194,7 +194,7 @@ export default function Cart({ navigation }) {
 															onPress={() => {
 																showDeleteModal(item);
 															}}>
-															<FontAwesome name="trash" size={24} color="red" />
+															<FontAwesome name="trash" size={24} color="#ee001a" />
 														</TouchableOpacity>
 													</View>
 												</View>
@@ -356,9 +356,10 @@ const styles = StyleSheet.create({
 	},
 	date: {
 		marginTop: 4,
-		borderWidth: 1,
-		padding: 2,
+		padding: 4,
 		minWidth: 50,
+		backgroundColor: '#EFEFEF',
+		fontWeight: 'bold'
 	},
 	item: {
 		flex: 1,
@@ -420,11 +421,12 @@ const styles = StyleSheet.create({
 	},
 	input: {
 		height: 30,
-		borderWidth: 1,
+		fontWeight: 'bold',
 		paddingStart: 10,
 		paddingEnd: 10,
 		paddingTop: 5,
 		paddingBottom: 5,
+		backgroundColor: '#EFEFEF'
 	},
 	bottomView: {
 		display: 'flex',
@@ -496,7 +498,7 @@ const styles = StyleSheet.create({
 			borderRadius: 20,
 			padding: 10,
 			elevation: 2,
-			backgroundColor: '#2196F3',
+			backgroundColor: '#123A65',
 			width: 80,
 			textStyle: {
 				color: 'white',
@@ -506,7 +508,7 @@ const styles = StyleSheet.create({
 		},
 		buttonCancel: {
 			marginLeft: 10,
-			backgroundColor: 'red',
+			backgroundColor: '#ee001a',
 		},
 	},
 });

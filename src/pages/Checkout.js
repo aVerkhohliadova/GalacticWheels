@@ -13,24 +13,36 @@ import Order from '../DB/Order';
 
 const formatPhoneNumber = (phoneNumber) => {
 	if (!phoneNumber) {
-		return "";
+		return '';
 	}
 	// console.log(phoneNumber.length)
 
-	if (phoneNumber.startsWith("+")) {
+	if (phoneNumber.startsWith('+')) {
 		// Format for international number
 		if (phoneNumber.length === 12) {
 			// Format: +#-###-###-####
-			return `${phoneNumber.slice(0, 2)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
+			return `${phoneNumber.slice(0, 2)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(
+				4,
+				7
+			)}-${phoneNumber.slice(7)}`;
 		} else if (phoneNumber.length === 13) {
 			// Format: +##-###-###-####
-			return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
+			return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(
+				5,
+				8
+			)}-${phoneNumber.slice(8)}`;
 		} else if (phoneNumber.length === 14) {
 			// Format: +###-###-###-####
-			return `${phoneNumber.slice(0, 4)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
+			return `${phoneNumber.slice(0, 4)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(
+				6,
+				9
+			)}-${phoneNumber.slice(9)}`;
 		} else if (phoneNumber.length === 15) {
 			// Format: +####-###-###-####
-			return `${phoneNumber.slice(0, 5)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
+			return `${phoneNumber.slice(0, 5)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(
+				7,
+				10
+			)}-${phoneNumber.slice(10)}`;
 		} else {
 			return phoneNumber; // If none of the conditions match, return the original input
 		}
@@ -41,23 +53,35 @@ const formatPhoneNumber = (phoneNumber) => {
 			return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
 		} else if (phoneNumber.length === 11) {
 			// Format: +#-###-###-####
-			return `+${phoneNumber.slice(0, 1)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
+			return `+${phoneNumber.slice(0, 1)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(
+				4,
+				7
+			)}-${phoneNumber.slice(7)}`;
 		} else if (phoneNumber.length === 12) {
 			// Format: +##-###-###-####
-			return `+${phoneNumber.slice(0, 2)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
+			return `+${phoneNumber.slice(0, 2)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(
+				5,
+				8
+			)}-${phoneNumber.slice(8)}`;
 		} else if (phoneNumber.length === 13) {
 			// Format: +###-###-###-####
-			return `+${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
+			return `+${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(
+				6,
+				9
+			)}-${phoneNumber.slice(9)}`;
 		} else if (phoneNumber.length >= 14) {
 			// Format: +####-###-###-####
-			return `+${phoneNumber.slice(0, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
+			return `+${phoneNumber.slice(0, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(
+				7,
+				10
+			)}-${phoneNumber.slice(10)}`;
 		} else {
 			return phoneNumber; // If none of the conditions match, return the original input
 		}
 	}
 };
 
-export default function Cart({ route, navigation }) {
+export default function Checkout({ route, navigation }) {
 	const { user, updateUserData } = useDataContext();
 	const [editingPhone, setEditingPhone] = useState(false);
 	let [confirmOrderModal, setConfirmOrderModal] = useState(false);
@@ -111,9 +135,7 @@ export default function Cart({ route, navigation }) {
 
 		try {
 			// Check if orderHistory is an array
-			const orderHistoryArray = Array.isArray(user.orderHistory)
-				? user.orderHistory
-				: [];
+			const orderHistoryArray = Array.isArray(user.orderHistory) ? user.orderHistory : [];
 
 			// Store serializedOrder in Firestore document
 			await updateUserData({
@@ -125,7 +147,7 @@ export default function Cart({ route, navigation }) {
 			setConfirmOrderModal(false);
 			setOrderSuccessModal(true);
 		} catch (error) {
-			console.error("Error updating user data:", error);
+			console.error('Error updating user data:', error);
 		}
 	};
 
@@ -151,7 +173,7 @@ export default function Cart({ route, navigation }) {
 
 	const handlePhoneChange = (input) => {
 		// Remove non-digit characters from the input
-		const numericInput = input.replace(/\D/g, "");
+		const numericInput = input.replace(/\D/g, '');
 		// setPhone(numericInput);
 		setShippingInfo({
 			...shippingInfo,
@@ -161,96 +183,98 @@ export default function Cart({ route, navigation }) {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.box}>
-				<Text style={styles.subTotal}>Shipping Information</Text>
-				<View style={{ marginTop: 10 }}>
-					<Text>Name</Text>
-					<TextInput
-						placeholder="Enter your Full Name"
-						style={styles.input}
-						onChangeText={(value) => {
-							setShippingInfo({
-								...shippingInfo,
-								name: value,
-							});
-						}}
-						value={shippingInfo.name}
-					/>
-				</View>
-				<View style={{ marginTop: 10 }}>
-					<Text>Phone</Text>
-					<TextInput
-						style={styles.input}
-						placeholder={"Enter your Phone Number"}
-						value={editingPhone ? shippingInfo.phone : formatPhoneNumber(shippingInfo.phone)}
-						onChangeText={handlePhoneChange}
-						onFocus={() => setEditingPhone(true)} // Set editingPhone to true when editing starts
-						onBlur={() => setEditingPhone(false)}
-					/>
-				</View>
-				<View style={{ marginTop: 10 }}>
-					<Text>Address</Text>
-					<TextInput
-						placeholder="Enter your Address"
-						style={styles.input}
-						onChangeText={(value) => {
-							setShippingInfo({
-								...shippingInfo,
-								address: value,
-							});
-						}}
-						value={shippingInfo.address}
-					/>
-				</View>
-			</View>
-			<View style={styles.box}>
-				<Text style={styles.subTotal}>Payment</Text>
-				<View style={{ marginTop: 10 }}>
-					<Text>Card Number</Text>
-					<TextInput
-						placeholder="Card Number"
-						style={styles.input}
-						onChangeText={(value) => {
-							setPaymentInfo({
-								...paymentInfo,
-								cardNo: value,
-							});
-						}}
-						value={paymentInfo.cardNo}
-					/>
-				</View>
-				<View style={{ marginTop: 10, display: 'flex', flexDirection: 'row' }}>
-					<View style={{ flex: 1, marginRight: 20 }}>
-						<Text>Code</Text>
+			<ScrollView>
+				<View style={styles.box}>
+					<Text style={styles.subTotal}>Shipping Information</Text>
+					<View style={{ marginTop: 10 }}>
+						<Text>Name</Text>
 						<TextInput
-							placeholder="Code"
+							placeholder="Enter your Full Name"
+							style={styles.input}
+							onChangeText={(value) => {
+								setShippingInfo({
+									...shippingInfo,
+									name: value,
+								});
+							}}
+							value={shippingInfo.name}
+						/>
+					</View>
+					<View style={{ marginTop: 10 }}>
+						<Text>Phone</Text>
+						<TextInput
+							style={styles.input}
+							placeholder={'Enter your Phone Number'}
+							value={editingPhone ? shippingInfo.phone : formatPhoneNumber(shippingInfo.phone)}
+							onChangeText={handlePhoneChange}
+							onFocus={() => setEditingPhone(true)} // Set editingPhone to true when editing starts
+							onBlur={() => setEditingPhone(false)}
+						/>
+					</View>
+					<View style={{ marginTop: 10 }}>
+						<Text>Address</Text>
+						<TextInput
+							placeholder="Enter your Address"
+							style={styles.input}
+							onChangeText={(value) => {
+								setShippingInfo({
+									...shippingInfo,
+									address: value,
+								});
+							}}
+							value={shippingInfo.address}
+						/>
+					</View>
+				</View>
+				<View style={styles.box}>
+					<Text style={styles.subTotal}>Payment</Text>
+					<View style={{ marginTop: 10 }}>
+						<Text>Card Number</Text>
+						<TextInput
+							placeholder="Card Number"
 							style={styles.input}
 							onChangeText={(value) => {
 								setPaymentInfo({
 									...paymentInfo,
-									code: value,
+									cardNo: value,
 								});
 							}}
-							value={paymentInfo.code}
+							value={paymentInfo.cardNo}
 						/>
 					</View>
-					<View style={{ flex: 1 }}>
-						<Text>Type</Text>
-						<TextInput
-							placeholder="Expiry Date"
-							style={styles.input}
-							onChangeText={(value) => {
-								setPaymentInfo({
-									...paymentInfo,
-									expiryDate: value,
-								});
-							}}
-							value={paymentInfo.expiryDate}
-						/>
+					<View style={{ marginTop: 10, display: 'flex', flexDirection: 'row' }}>
+						<View style={{ flex: 1, marginRight: 20 }}>
+							<Text>Code</Text>
+							<TextInput
+								placeholder="Code"
+								style={styles.input}
+								onChangeText={(value) => {
+									setPaymentInfo({
+										...paymentInfo,
+										code: value,
+									});
+								}}
+								value={paymentInfo.code}
+							/>
+						</View>
+						<View style={{ flex: 1 }}>
+							<Text>Type</Text>
+							<TextInput
+								placeholder="Expiry Date"
+								style={styles.input}
+								onChangeText={(value) => {
+									setPaymentInfo({
+										...paymentInfo,
+										expiryDate: value,
+									});
+								}}
+								value={paymentInfo.expiryDate}
+							/>
+						</View>
 					</View>
 				</View>
-			</View>
-			{error && <Text style={{ fontSize: 12, color: 'red' }}>Please fill all the boxes.</Text>}
+				{error && <Text style={{ fontSize: 12, color: 'red' }}>Please fill all the boxes.</Text>}
+			</ScrollView>
 			<View style={styles.bottomView}>
 				<View style={styles.summary}>
 					<View style={styles.summaryRow}>
@@ -422,7 +446,7 @@ const styles = StyleSheet.create({
 			borderRadius: 20,
 			padding: 10,
 			elevation: 2,
-			backgroundColor: '#2196F3',
+			backgroundColor: '#123A65',
 			minWidth: 80,
 			textStyle: {
 				color: 'white',
@@ -432,7 +456,7 @@ const styles = StyleSheet.create({
 		},
 		buttonCancel: {
 			marginLeft: 10,
-			backgroundColor: 'red',
+			backgroundColor: '#ee001a',
 		},
 	},
 });
