@@ -40,15 +40,44 @@ export function DataContext({ children }) {
     _setUser(data);
   }, []);
 
+  // const updateUserData = useCallback(
+  //   (userData) => {
+  //     if (!user || !user.id) {
+  //       console.error("User data or user id is missing.");
+  //       return;
+  //     }
+
+  //     const updatedUser = { ...user, ...userData };
+
+  //     try {
+  //       _setUser(updatedUser);
+  //       update(COLLECTION.USERS, updatedUser.id, updatedUser);
+  //     } catch (error) {
+  //       console.error("Firestore update error:", error.message);
+  //     }
+  //   },
+  //   [user]
+  // );
+
   const updateUserData = useCallback(
     (userData) => {
       if (!user || !user.id) {
         console.error("User data or user id is missing.");
         return;
       }
-
+  
       const updatedUser = { ...user, ...userData };
-
+  
+      // Serialize orderHistory array
+      const serializedOrderHistory = updatedUser.orderHistory.map((order) => ({
+        date: order.date,
+        items: order.items,
+        shippingInfo: { ...order.shippingInfo },
+        paymentInfo: { ...order.paymentInfo },
+      }));
+  
+      updatedUser.orderHistory = serializedOrderHistory;
+  
       try {
         _setUser(updatedUser);
         update(COLLECTION.USERS, updatedUser.id, updatedUser);
@@ -58,6 +87,7 @@ export function DataContext({ children }) {
     },
     [user]
   );
+  
 
   const updatePassword = useCallback(async (newPassword) => {
     const user = auth.currentUser;

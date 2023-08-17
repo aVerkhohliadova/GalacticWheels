@@ -1,52 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, ActivityIndicator, StatusBar } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, StatusBar, Image, ScrollView } from "react-native";
+import { Card } from "react-native-paper";
 import useDataContext from "../api/dataContext";
-
-const Orders = () => {
-
-    const { user, isLoading } = useDataContext();
-
-    if (isLoading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#1E90FF" />
-                <Text style={styles.loadingText}>Loading...</Text>
-            </View>
-        );
-    }
-
-    // const newOrder = {
-    //     date: "2023-08-09", // Example date
-    //     items: ["Item 1"], // Example items
-    //   };
-
-    //   user.addOrderToHistory(newOrder);
-
-    // Fetch user's order history here
-    const orderHistory = user.orderHistory || []; // Assuming user.orderHistory is an array
-
-    return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-            {/* <View style={styles.profileHeader}>
-                <Text style={styles.headerText}>Order History</Text>
-            </View> */}
-            {orderHistory.length > 0 ? (
-                orderHistory.map((order, index) => (
-                    <View key={index} style={styles.orderContainer}>
-                        <Text style={styles.orderTitle}>Order {index + 1}</Text>
-                        <Text>Order Date: {order.date}</Text>
-                        <Text>Items: {order.items.join(", ")}</Text>
-                    </View>
-                ))
-            ) : (
-                <View style={styles.centeredContainer}>
-                    <Text>No order history available.</Text>
-                </View>
-            )}
-        </View>
-    );
-};
 
 const styles = StyleSheet.create({
     container: {
@@ -57,7 +12,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-      },
+    },
     loadingContainer: {
         flex: 1,
         justifyContent: "center",
@@ -68,28 +23,119 @@ const styles = StyleSheet.create({
         marginTop: 10,
         color: "#1E90FF",
     },
-    // profileHeader: {
-    //     alignItems: "center",
-    //     // marginTop: StatusBar.currentHeight + 100,
-    //     marginBottom: 40,
-    // },
-    // headerText: {
-    //     fontSize: 24,
-    //     fontWeight: "bold",
-    //     color: "#333",
-    // },
-    orderContainer: {
-        backgroundColor: "#F5F5F5",
-        padding: 20,
+
+    orderCard: {
+        marginBottom: 20,
         borderRadius: 10,
-        marginBottom: 10,
+        elevation: 3,
     },
-    orderTitle: {
-        fontSize: 18,
+    itemContainer: {
+        marginTop: 10,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: "#ddd",
+        borderRadius: 5,
+        flexDirection: "row", 
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    textContainer: {
+        flexDirection: "column",
+        marginBottom: 5,
+    },
+    orderDate: {
         fontWeight: "bold",
-        marginBottom: 10,
-        color: "#333",
+    },
+    modelName: {
+        width: 200,
+        fontSize: 16,
+    },
+    modelType: {
+        marginTop: 5,
+        fontSize: 14,
+        width: 200,
+    },
+    amount: {
+        paddingTop: 10,
+        fontWeight: "bold",
+    },
+    imageContainer: {
+        marginLeft: 10,
+    },
+    itemPhoto: {
+        width: 70,
+        height: 70,
+        borderRadius: 10,
     },
 });
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+};
+
+const Orders = () => {
+
+    const { user, isLoading, spaceships } = useDataContext();
+
+    if (isLoading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#1E90FF" />
+                <Text style={styles.loadingText}>Loading...</Text>
+            </View>
+        );
+    }
+
+    // Fetch user's order history here
+    const orderHistory = user.orderHistory || []; // Assuming user.orderHistory is an array
+
+    return (
+        <View style={styles.container}>
+            <ScrollView>
+                {orderHistory.length > 0 ? (
+                    orderHistory.map((order, index) => {
+                        let orderTotalPrice = 0; // Initialize the total price for the order
+
+                        return (
+                            <Card key={index} style={styles.orderCard}>
+                                <Card.Content>
+                                    <Text style={styles.orderDate}>Order Date: {formatDate(order.date)}</Text>
+                                    {order.items.map((item, itemIndex) => {
+                                        const spaceship = spaceships.find(s => s.id === item.spaceshipId);
+                                        orderTotalPrice += spaceship ? spaceship.price : 0; // Add to the total price
+                                        return (
+                                            <View key={itemIndex} style={styles.itemContainer}>
+                                                <View style={styles.textContainer}>
+                                                    <Text style={styles.modelName}>{spaceship ? spaceship.title : 'Unknown Title'}</Text>
+                                                    <Text style={styles.modelType}>{spaceship ? spaceship.type : ""}</Text>
+                                                    <Text style={styles.amount}>${spaceship ? spaceship.price : ""}</Text>
+                                                </View>
+                                                <View style={styles.imageContainer}>
+                                                    <Image
+                                                        source={{ uri: spaceship ? spaceship.src : "" }}
+                                                        style={styles.itemPhoto}
+                                                    />
+                                                </View>
+                                            </View>
+                                        );
+                                    })}
+                                    <Text style={styles.amount}>Total price: ${(orderTotalPrice*1.13).toFixed(2)}</Text>
+                                </Card.Content>
+                            </Card>
+                        );
+                    })
+                ) : (
+                    <View style={styles.centeredContainer}>
+                        <Text>No order history available.</Text>
+                    </View>
+                )}
+            </ScrollView>
+        </View>
+    );
+};
 
 export default Orders;
