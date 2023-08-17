@@ -47,6 +47,10 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     color: "green",
   },
+  addedToCart: {
+    paddingTop: 10,
+    color: "#ff4500",
+  },
   unavailable: {
     paddingTop: 10,
     color: "red",
@@ -58,13 +62,16 @@ const styles = StyleSheet.create({
 });
 
 function List({ navigation }) {
-  const { spaceships } = useDataContext();
-
+  const { user, spaceships } = useDataContext();
   return (
     <View style={styles.container}>
       <ScrollView>
         {spaceships.length > 0 ? (
           spaceships.map((item) => {
+            const isAdded = !!user.cart.find(
+              (cartItem) => cartItem.spaceshipId === item.id
+            );
+
             return (
               <TouchableOpacity
                 key={item.id}
@@ -91,11 +98,17 @@ function List({ navigation }) {
                           <Text
                             style={
                               item.available
-                                ? styles.availableStatus
+                                ? isAdded
+                                  ? styles.addedToCart
+                                  : styles.availableStatus
                                 : styles.unavailable
                             }
                           >
-                            {item.available ? "Available" : "Unavailable"}
+                            {item.available
+                              ? isAdded
+                                ? "Added to cart"
+                                : "Available"
+                              : "Unavailable"}
                           </Text>
                           <Text
                             style={{
