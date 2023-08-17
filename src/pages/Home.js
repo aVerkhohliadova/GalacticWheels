@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import { Card } from "react-native-paper";
 import useDataContext from "../api/dataContext";
 import { logout } from "../api/authentication";
@@ -17,7 +17,11 @@ export default function Home({ navigation }) {
       img: "https://img.freepik.com/premium-vector/rocket-icon-rocket-planets-space-icon-white-isolated_138676-551.jpg",
       color: "#EAF0FF",
     },
-
+    {
+      name: "Cart",
+      img: "https://cdn-icons-png.flaticon.com/512/3900/3900101.png",
+      color: "#EAF0FF",
+    },
     {
       name: "Orders",
       img: "https://cdn-icons-png.flaticon.com/512/3225/3225247.png",
@@ -25,12 +29,7 @@ export default function Home({ navigation }) {
     },
     {
       name: "Profile",
-      img: "https://cdn3d.iconscout.com/3d/premium/thumb/profile-6073860-4996977.png",
-      color: "#EAF0FF",
-    },
-    {
-      name: "Cart",
-      img: "https://cdn-icons-png.flaticon.com/512/3900/3900101.png",
+      img: "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
       color: "#EAF0FF",
     },
   ];
@@ -86,49 +85,53 @@ export default function Home({ navigation }) {
         />
       </View>
 
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          width: "100%",
-        }}
-      >
-        {tabOptions.map((item) => {
-          return (
-            <View
-              key={item.name}
-              style={{
-                marginLeft: "5%",
-                marginRight: "5%",
-                marginTop: 20,
-                height: 200,
-                width: "40%",
-              }}
-            >
-              <TouchableOpacity onPress={() => navigation.navigate(item.name)}>
-                <Card style={{ backgroundColor: item.color }}>
-                  <Card.Cover
-                    style={{ height: 150, backgroundColor: item.color }}
-                    source={{ uri: item.img }}
-                  />
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      padding: 10,
-                      fontSize: 15,
-                      color: "#123A65",
-                    }}
-                  >
-                    {item.name}
-                  </Text>
-                </Card>
-              </TouchableOpacity>
-            </View>
-          );
-        })}
-      </View>
+      <ScrollView>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            width: "100%",
+          }}
+        >
+          {tabOptions.map((item) => {
+            return (
+              <View
+                key={item.name}
+                style={{
+                  marginLeft: "5%",
+                  marginRight: "5%",
+                  marginTop: 20,
+                  height: 200,
+                  width: "40%",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => navigation.navigate(item.name)}
+                >
+                  <Card style={{ backgroundColor: item.color }}>
+                    <Card.Cover
+                      style={{ height: 150, backgroundColor: item.color }}
+                      source={{ uri: item.img }}
+                    />
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontWeight: "bold",
+                        padding: 15,
+                        fontSize: 15,
+                        color: "#123A65",
+                      }}
+                    >
+                      {item.name}
+                    </Text>
+                  </Card>
+                </TouchableOpacity>
+              </View>
+            );
+          })}
+        </View>
+      </ScrollView>
     </View>
   );
 }
