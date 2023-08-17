@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Card } from "react-native-paper";
 import useDataContext from "../api/dataContext";
 import { logout } from "../api/authentication";
 
@@ -10,6 +10,30 @@ export default function Home({ navigation }) {
     logout();
     setUser();
   };
+
+  const tabOptions = [
+    {
+      name: "Spaceships",
+      img: "https://img.freepik.com/premium-vector/rocket-icon-rocket-planets-space-icon-white-isolated_138676-551.jpg",
+      color: "#EAF0FF",
+    },
+
+    {
+      name: "Orders",
+      img: "https://cdn-icons-png.flaticon.com/512/3225/3225247.png",
+      color: "#EAF0FF",
+    },
+    {
+      name: "Profile",
+      img: "https://cdn3d.iconscout.com/3d/premium/thumb/profile-6073860-4996977.png",
+      color: "#EAF0FF",
+    },
+    {
+      name: "Cart",
+      img: "https://cdn-icons-png.flaticon.com/512/3900/3900101.png",
+      color: "#EAF0FF",
+    },
+  ];
 
   return (
     <View style={{ marginTop: 50, marginRight: 10 }}>
@@ -35,6 +59,7 @@ export default function Home({ navigation }) {
           </Text>
         </TouchableOpacity>
       </View>
+
       <Text
         style={{
           fontWeight: "bold",
@@ -44,7 +69,7 @@ export default function Home({ navigation }) {
           marginTop: 20,
         }}
       >
-        SPACESHIP WORLD
+        GALACTIC WHEELS
       </Text>
       <View
         style={{
@@ -65,126 +90,44 @@ export default function Home({ navigation }) {
         style={{
           display: "flex",
           flexDirection: "row",
-          width: "100%",
-          marginTop: 25,
-        }}
-      >
-        <View
-          style={{
-            margin: 20,
-            height: 150,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#6dc6e3",
-            borderRadius: 25,
-            width: "40%",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.navigate("My Spaceships")}
-          >
-            <Icon
-              name="user"
-              size={24}
-              style={{ textAlign: "center", color: "#123A65" }}
-            />
-
-            <Text
-              style={{ color: "#123A65", fontWeight: "bold", paddingTop: 20 }}
-            >
-              SPACESHIPS
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            margin: 20,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 150,
-            backgroundColor: "#6dc6e3",
-            width: "40%",
-            borderRadius: 25,
-          }}
-        >
-          <TouchableOpacity onPress={() => navigation.navigate("Orders")}>
-            <Icon
-              name="user"
-              size={24}
-              style={{ textAlign: "center", color: "#123A65" }}
-            />
-            <Text
-              style={{ color: "#123A65", fontWeight: "bold", paddingTop: 20 }}
-            >
-              ORDER HISTORY
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
+          flexWrap: "wrap",
           width: "100%",
         }}
       >
-        <View
-          style={{
-            margin: 20,
-            display: "flex",
-            height: 150,
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#6dc6e3",
-            width: "40%",
-            borderRadius: 25,
-          }}
-        >
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-            <Icon
-              name="user"
-              size={24}
-              style={{ textAlign: "center", color: "#123A65" }}
-            />
-            <Text
-              style={{ color: "#123A65", fontWeight: "bold", paddingTop: 20 }}
+        {tabOptions.map((item) => {
+          return (
+            <View
+              key={item.name}
+              style={{
+                marginLeft: "5%",
+                marginRight: "5%",
+                marginTop: 20,
+                height: 200,
+                width: "40%",
+              }}
             >
-              PROFILE
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            margin: 20,
-            display: "flex",
-            height: 150,
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#6dc6e3",
-            width: "40%",
-            borderRadius: 25,
-          }}
-        >
-          <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
-            <Icon
-              name="shopping-cart"
-              size={24}
-              style={{ textAlign: "center", color: "#123A65" }}
-            />
-            <Text
-              style={{ color: "#123A65", fontWeight: "bold", paddingTop: 20 }}
-            >
-              CART
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <TouchableOpacity onPress={() => navigation.navigate(item.name)}>
+                <Card style={{ backgroundColor: item.color }}>
+                  <Card.Cover
+                    style={{ height: 150, backgroundColor: item.color }}
+                    source={{ uri: item.img }}
+                  />
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      fontWeight: "bold",
+                      padding: 10,
+                      fontSize: 15,
+                      color: "#123A65",
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                </Card>
+              </TouchableOpacity>
+            </View>
+          );
+        })}
       </View>
     </View>
   );
