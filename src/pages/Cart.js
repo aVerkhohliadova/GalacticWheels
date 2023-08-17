@@ -9,9 +9,9 @@ import {
 	Modal,
 	ActivityIndicator,
 } from 'react-native';
-import { Entypo, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
+import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 import useDataContext from '../api/dataContext';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { TextInputMask } from 'react-native-masked-text';
 
 export default function Cart({ navigation }) {
 	const { user, isLoadingContext, updateUserData } = useDataContext();
@@ -24,6 +24,7 @@ export default function Cart({ navigation }) {
 		startDate: new Date(),
 		endDate: new Date(),
 	});
+	let [dateError, setDateError] = useState(false);
 
 	useEffect(() => {
 		prepareCartData();
@@ -31,7 +32,8 @@ export default function Cart({ navigation }) {
 
 	const prepareCartData = () => {
 		const items = [];
-		user.cart.forEach((item) => {
+		const cart = [...user.cart];
+		cart.forEach((item) => {
 			if (spaceships.findIndex((i) => i.id === item.spaceshipId) > -1) {
 				const spaceship = spaceships[spaceships.findIndex((i) => i.id === item.spaceshipId)];
 				items.push({
@@ -44,7 +46,7 @@ export default function Cart({ navigation }) {
 				});
 			}
 		});
-		setCartItems(items);
+		setCartItems([...items]);
 	};
 
 	const showDeleteModal = (item) => {
@@ -53,50 +55,30 @@ export default function Cart({ navigation }) {
 	};
 
 	const showEditModal = (item) => {
-		const startDate = new Date(item.rent_from);
-		const endDate = new Date(item.rent_to);
-
-		// // Date issue due to timezone so adding one day
-		// // Add one day to the start date
-		// startDate.setDate(startDate.getDate() + 1);
-
-		// // Add one day to the end date
-		// endDate.setDate(endDate.getDate() + 1);
-
+		setDateError(false);
 		setEditDate({
-			startDate: startDate,
-			endDate: endDate,
+			startDate: item.rent_from,
+			endDate: item.rent_to,
 		});
 		setSelectedItem(item);
 		setEditModalVisible(true);
 	};
 
-	const onStartDatePickerChange = ({ type }, selectedDate) => {
-		if (type == 'set') {
-			setEditDate({
-				...editDate,
-				startDate: selectedDate,
-			});
-		}
-	};
-
-	const onEndDatePickerChange = ({ type }, selectedDate) => {
-		if (type == 'set') {
-			setEditDate({
-				...editDate,
-				endDate: selectedDate,
-			});
-		}
-	};
-
 	const editItem = () => {
+		const rentFrom = Date.parse(editDate.startDate);
+		const rentTo = Date.parse(editDate.endDate);
+		if (rentFrom >= rentTo) {
+			setDateError(true);
+			return;
+		}
+		setDateError(false);
 		const newCartItems = [
 			...user.cart.map((i) => {
 				if (i.spaceshipId === selectedItem.spaceshipId) {
 					return {
 						...i,
-						rent_from: editDate.startDate.toISOString().split('T')[0],
-						rent_to: editDate.endDate.toISOString().split('T')[0],
+						rent_from: editDate.startDate,
+						rent_to: editDate.endDate,
 					};
 				}
 				return i;
@@ -104,7 +86,7 @@ export default function Cart({ navigation }) {
 		];
 		updateUserData({
 			...user,
-			cart: newCartItems,
+			cart: [...newCartItems],
 		});
 		prepareCartData();
 		setEditModalVisible(false);
@@ -288,7 +270,20 @@ export default function Cart({ navigation }) {
 											alignItems: 'center',
 										}}>
 										<Text style={{ minWidth: 40 }}>From</Text>
-										<DateTimePicker value={editDate.startDate} onChange={onStartDatePickerChange} />
+										<TextInputMask
+											style={styles.input}
+											type={'datetime'}
+											options={{
+												format: 'YYYY-MM-DD',
+											}}
+											value={editDate.startDate}
+											onChangeText={(text) => {
+												setEditDate({
+													...editDate,
+													startDate: text,
+												});
+											}}
+										/>
 									</View>
 									<View
 										style={{
@@ -298,8 +293,22 @@ export default function Cart({ navigation }) {
 											marginTop: 10,
 										}}>
 										<Text style={{ minWidth: 40 }}>To</Text>
-										<DateTimePicker value={editDate.endDate} onChange={onEndDatePickerChange} />
+										<TextInputMask
+											style={styles.input}
+											type={'datetime'}
+											options={{
+												format: 'YYYY-MM-DD',
+											}}
+											value={editDate.endDate}
+											onChangeText={(text) => {
+												setEditDate({
+													...editDate,
+													endDate: text,
+												});
+											}}
+										/>
 									</View>
+									{dateError && <Text style={{color: 'red', marginTop: 10}}>To date should be greater.</Text>}
 								</View>
 								<View style={styles.modalView.buttonDiv}>
 									<TouchableOpacity style={styles.modalView.button} onPress={editItem}>
