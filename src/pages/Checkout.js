@@ -6,11 +6,60 @@ import {
 	Text,
 	TouchableOpacity,
 	Modal,
+	ScrollView,
 } from 'react-native';
 import useDataContext from '../api/dataContext';
+import Order from '../DB/Order';
+
+const formatPhoneNumber = (phoneNumber) => {
+	if (!phoneNumber) {
+		return "";
+	}
+	// console.log(phoneNumber.length)
+
+	if (phoneNumber.startsWith("+")) {
+		// Format for international number
+		if (phoneNumber.length === 12) {
+			// Format: +#-###-###-####
+			return `${phoneNumber.slice(0, 2)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
+		} else if (phoneNumber.length === 13) {
+			// Format: +##-###-###-####
+			return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
+		} else if (phoneNumber.length === 14) {
+			// Format: +###-###-###-####
+			return `${phoneNumber.slice(0, 4)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
+		} else if (phoneNumber.length === 15) {
+			// Format: +####-###-###-####
+			return `${phoneNumber.slice(0, 5)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
+		} else {
+			return phoneNumber; // If none of the conditions match, return the original input
+		}
+	} else {
+		// Format for local number
+		if (phoneNumber.length === 10) {
+			// Default format: ###-###-####
+			return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
+		} else if (phoneNumber.length === 11) {
+			// Format: +#-###-###-####
+			return `+${phoneNumber.slice(0, 1)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
+		} else if (phoneNumber.length === 12) {
+			// Format: +##-###-###-####
+			return `+${phoneNumber.slice(0, 2)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
+		} else if (phoneNumber.length === 13) {
+			// Format: +###-###-###-####
+			return `+${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
+		} else if (phoneNumber.length >= 14) {
+			// Format: +####-###-###-####
+			return `+${phoneNumber.slice(0, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
+		} else {
+			return phoneNumber; // If none of the conditions match, return the original input
+		}
+	}
+};
 
 export default function Cart({ route, navigation }) {
 	const { user, updateUserData } = useDataContext();
+	const [editingPhone, setEditingPhone] = useState(false);
 	let [confirmOrderModal, setConfirmOrderModal] = useState(false);
 	let [error, setError] = useState(false);
 	let [orderSuccessModal, setOrderSuccessModal] = useState(false);
@@ -39,21 +88,45 @@ export default function Cart({ route, navigation }) {
 		return (Number(subTotal) * 1.13).toFixed(2);
 	};
 
-	const confirmOrder = () => {
+	const confirmOrder = async () => {
 		const orderData = {
 			items: [...user.cart],
 			shippingInfo,
 			paymentInfo,
 		};
-		console.log(orderData);
-		updateUserData({
-			...user,
-			cart: [],
-			orderHistory: orderData,
+
+		const newOrder = new Order({
+			date: new Date().toISOString(),
+			items: orderData.items,
+			shippingInfo: orderData.shippingInfo,
+			paymentInfo: orderData.paymentInfo,
 		});
 
-		setConfirmOrderModal(false);
-		setOrderSuccessModal(true);
+		const serializedOrder = {
+			date: newOrder.date,
+			items: newOrder.items,
+			shippingInfo: { ...newOrder.shippingInfo },
+			paymentInfo: { ...newOrder.paymentInfo },
+		};
+
+		try {
+			// Check if orderHistory is an array
+			const orderHistoryArray = Array.isArray(user.orderHistory)
+				? user.orderHistory
+				: [];
+
+			// Store serializedOrder in Firestore document
+			await updateUserData({
+				...user,
+				cart: [],
+				orderHistory: [...orderHistoryArray, serializedOrder],
+			});
+
+			setConfirmOrderModal(false);
+			setOrderSuccessModal(true);
+		} catch (error) {
+			console.error("Error updating user data:", error);
+		}
 	};
 
 	const openOrderConfirmModal = () => {
@@ -74,6 +147,16 @@ export default function Cart({ route, navigation }) {
 
 	const onHomePressed = () => {
 		navigation.navigate('Home');
+	};
+
+	const handlePhoneChange = (input) => {
+		// Remove non-digit characters from the input
+		const numericInput = input.replace(/\D/g, "");
+		// setPhone(numericInput);
+		setShippingInfo({
+			...shippingInfo,
+			phone: numericInput,
+		});
 	};
 
 	return (
@@ -97,15 +180,12 @@ export default function Cart({ route, navigation }) {
 				<View style={{ marginTop: 10 }}>
 					<Text>Phone</Text>
 					<TextInput
-						placeholder="Enter your Phone Number"
 						style={styles.input}
-						onChangeText={(value) => {
-							setShippingInfo({
-								...shippingInfo,
-								phone: value,
-							});
-						}}
-						value={shippingInfo.phone}
+						placeholder={"Enter your Phone Number"}
+						value={editingPhone ? shippingInfo.phone : formatPhoneNumber(shippingInfo.phone)}
+						onChangeText={handlePhoneChange}
+						onFocus={() => setEditingPhone(true)} // Set editingPhone to true when editing starts
+						onBlur={() => setEditingPhone(false)}
 					/>
 				</View>
 				<View style={{ marginTop: 10 }}>

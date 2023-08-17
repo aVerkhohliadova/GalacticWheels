@@ -36,7 +36,7 @@ const formatPhoneNumber = (phoneNumber) => {
     if (!phoneNumber) {
       return "";
     }
-    console.log(phoneNumber.length)
+    // console.log(phoneNumber.length)
 
     if (phoneNumber.startsWith("+")) {
       // Format for international number
@@ -76,7 +76,6 @@ const formatPhoneNumber = (phoneNumber) => {
         return phoneNumber; // If none of the conditions match, return the original input
       }
     }
-
   };
 
 const UpdateProfile = ({ navigation }) => {
@@ -88,6 +87,12 @@ const UpdateProfile = ({ navigation }) => {
     const [newPassword, setNewPassword] = useState(""); // New password state
     const [error, setError] = useState("");
     const [editingPhone, setEditingPhone] = useState(false);
+
+    const handlePhoneChange = (input) => {
+      // Remove non-digit characters from the input
+      const numericInput = input.replace(/\D/g, "");
+      setPhone(numericInput);
+  };
 
     const handleUpdate = async () => {
         setError("");
@@ -133,7 +138,7 @@ const UpdateProfile = ({ navigation }) => {
                     style={styles.input}
                     placeholder={`Phone`}
                     value={editingPhone ? phone : formatPhoneNumber(phone)}
-                    onChangeText={setPhone}
+                    onChangeText={handlePhoneChange}
                     onFocus={() => setEditingPhone(true)} // Set editingPhone to true when editing starts
                     onBlur={() => setEditingPhone(false)}
                 />
