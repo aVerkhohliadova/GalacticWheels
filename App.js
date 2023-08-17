@@ -32,7 +32,7 @@ function Router() {
               />
               <Stack.Screen name="Profile" component={Profile} />
               <Stack.Screen name="Orders" component={Orders} />
-              <Stack.Screen name="My Spaceships" component={List} />
+              <Stack.Screen name="Spaceships" component={List} />
               <Stack.Screen name="Cart" component={Cart} />
               <Stack.Screen
                 name="SpaceshipDetail"
