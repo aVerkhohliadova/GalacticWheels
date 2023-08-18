@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#ddd",
         borderRadius: 5,
-        flexDirection: "row", 
+        flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
     },
@@ -45,6 +45,10 @@ const styles = StyleSheet.create({
     },
     orderDate: {
         fontWeight: "bold",
+    },
+    dates: {
+        paddingTop: 5,
+        fontSize: 12,
     },
     modelName: {
         width: 200,
@@ -90,6 +94,12 @@ const Orders = () => {
         );
     }
 
+    const getItemPrice = (rent_from, rent_to, price) => {
+		const rentFrom = Date.parse(rent_from);
+		const rentTo = Date.parse(rent_to);
+		return price * Math.ceil((rentTo - rentFrom) / (1000 * 3600 * 24));
+	};
+
     // Fetch user's order history here
     const orderHistory = user.orderHistory || []; // Assuming user.orderHistory is an array
 
@@ -97,7 +107,7 @@ const Orders = () => {
         <View style={styles.container}>
             <ScrollView>
                 {orderHistory.length > 0 ? (
-                    orderHistory.map((order, index) => {
+                    orderHistory.reverse().map((order, index) => {
                         let orderTotalPrice = 0; // Initialize the total price for the order
 
                         return (
@@ -106,13 +116,15 @@ const Orders = () => {
                                     <Text style={styles.orderDate}>Order Date: {formatDate(order.date)}</Text>
                                     {order.items.map((item, itemIndex) => {
                                         const spaceship = spaceships.find(s => s.id === item.spaceshipId);
-                                        orderTotalPrice += spaceship ? spaceship.price : 0; // Add to the total price
+                                        orderTotalPrice += getItemPrice(item.rent_from, item.rent_to, spaceship.price); // Add to the total price
                                         return (
                                             <View key={itemIndex} style={styles.itemContainer}>
                                                 <View style={styles.textContainer}>
                                                     <Text style={styles.modelName}>{spaceship ? spaceship.title : 'Unknown Title'}</Text>
                                                     <Text style={styles.modelType}>{spaceship ? spaceship.type : ""}</Text>
-                                                    <Text style={styles.amount}>${spaceship ? spaceship.price : ""}</Text>
+                                                    <Text style={styles.dates}>From: {formatDate(item.rent_from)}</Text>
+                                                    <Text style={styles.dates}>To:   {formatDate(item.rent_to)}</Text>
+                                                    <Text style={styles.amount}>${getItemPrice(item.rent_from, item.rent_to, spaceship.price)}</Text>
                                                 </View>
                                                 <View style={styles.imageContainer}>
                                                     <Image
@@ -123,7 +135,8 @@ const Orders = () => {
                                             </View>
                                         );
                                     })}
-                                    <Text style={styles.amount}>Total price: ${(orderTotalPrice*1.13).toFixed(2)}</Text>
+
+                                    <Text style={styles.amount}>Total price: ${(orderTotalPrice * 1.13).toFixed(2)}</Text>
                                 </Card.Content>
                             </Card>
                         );
