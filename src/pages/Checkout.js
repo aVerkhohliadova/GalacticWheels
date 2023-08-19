@@ -14,40 +14,7 @@ import Order from '../DB/Order';
 const formatPhoneNumber = (phoneNumber) => {
 	if (!phoneNumber) {
 		return '';
-	}
-	// console.log(phoneNumber.length)
-
-	if (phoneNumber.startsWith('+')) {
-		// Format for international number
-		if (phoneNumber.length === 12) {
-			// Format: +#-###-###-####
-			return `${phoneNumber.slice(0, 2)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(
-				4,
-				7
-			)}-${phoneNumber.slice(7)}`;
-		} else if (phoneNumber.length === 13) {
-			// Format: +##-###-###-####
-			return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(
-				5,
-				8
-			)}-${phoneNumber.slice(8)}`;
-		} else if (phoneNumber.length === 14) {
-			// Format: +###-###-###-####
-			return `${phoneNumber.slice(0, 4)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(
-				6,
-				9
-			)}-${phoneNumber.slice(9)}`;
-		} else if (phoneNumber.length === 15) {
-			// Format: +####-###-###-####
-			return `${phoneNumber.slice(0, 5)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(
-				7,
-				10
-			)}-${phoneNumber.slice(10)}`;
-		} else {
-			return phoneNumber; // If none of the conditions match, return the original input
-		}
 	} else {
-		// Format for local number
 		if (phoneNumber.length === 10) {
 			// Default format: ###-###-####
 			return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
