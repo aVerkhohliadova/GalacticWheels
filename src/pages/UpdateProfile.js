@@ -4,166 +4,162 @@ import useDataContext from "../api/dataContext";
 import Logo from "../components/Logo";
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: -120,
-        width: "80%",
-    },
-    input: {
-        borderColor: "gray",
-        borderWidth: 1,
-        borderRadius: 5,
-        padding: 10,
-        width: 200,
-        margin: 10,
-    },
-    updateButton: {
-        marginTop: 10,
-        backgroundColor: "#5984b3",
-        padding: 12,
-        borderRadius: 20,
-        width: "100%",
-    },
-    buttonText: {
-        textAlign: "center",
-        color: "white",
-    },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: -120,
+    width: "80%",
+  },
+  input: {
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    width: 200,
+    margin: 10,
+  },
+  updateButton: {
+    marginTop: 10,
+    backgroundColor: "#5984b3",
+    padding: 12,
+    borderRadius: 20,
+    width: "100%",
+  },
+  buttonText: {
+    textAlign: "center",
+    color: "white",
+  },
 });
 
 const formatPhoneNumber = (phoneNumber) => {
-    if (!phoneNumber) {
-      return "";
-    }
-    // console.log(phoneNumber.length)
-
-    if (phoneNumber.startsWith("+")) {
-      // Format for international number
-      if (phoneNumber.length === 12) {
-        // Format: +#-###-###-####
-        return `${phoneNumber.slice(0, 2)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
-      } else if (phoneNumber.length === 13) {
-        // Format: +##-###-###-####
-        return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
-      } else if (phoneNumber.length === 14) {
-        // Format: +###-###-###-####
-        return `${phoneNumber.slice(0, 4)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
-      } else if (phoneNumber.length === 15) {
-        // Format: +####-###-###-####
-        return `${phoneNumber.slice(0, 5)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
-      } else {
-        return phoneNumber; // If none of the conditions match, return the original input
-      }
+  if (!phoneNumber) {
+    return "";
+  } else {
+    // Format for local number
+    if (phoneNumber.length === 10) {
+      // Default format: ###-###-####
+      return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
+    } else if (phoneNumber.length === 11) {
+      // Format: +#-###-###-####
+      return `+${phoneNumber.slice(0, 1)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
+    } else if (phoneNumber.length === 12) {
+      // Format: +##-###-###-####
+      return `+${phoneNumber.slice(0, 2)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
+    } else if (phoneNumber.length === 13) {
+      // Format: +###-###-###-####
+      return `+${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
+    } else if (phoneNumber.length >= 14) {
+      // Format: +####-###-###-####
+      return `+${phoneNumber.slice(0, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
     } else {
-      // Format for local number
-      if (phoneNumber.length === 10) {
-        // Default format: ###-###-####
-        return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`;
-      } else if (phoneNumber.length === 11) {
-        // Format: +#-###-###-####
-        return `+${phoneNumber.slice(0, 1)}-${phoneNumber.slice(1, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
-      } else if (phoneNumber.length === 12) {
-        // Format: +##-###-###-####
-        return `+${phoneNumber.slice(0, 2)}-${phoneNumber.slice(2, 5)}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
-      } else if (phoneNumber.length === 13) {
-        // Format: +###-###-###-####
-        return `+${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
-      } else if (phoneNumber.length >= 14) {
-        // Format: +####-###-###-####
-        return `+${phoneNumber.slice(0, 4)}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
-      } else {
-        return phoneNumber; // If none of the conditions match, return the original input
-      }
+      return phoneNumber; // If none of the conditions match, return the original input
     }
-  };
+  }
+};
 
 const UpdateProfile = ({ navigation }) => {
-    const { user, updateUserData, updatePassword } = useDataContext();
+  const { user, updateUserData, updatePassword, updateEmail } = useDataContext();
 
-    const [name, setName] = useState(user.name);
-    const [phone, setPhone] = useState(user.phone);
-    const [email, setEmail] = useState(user.email);
-    const [newPassword, setNewPassword] = useState(""); // New password state
-    const [error, setError] = useState("");
-    const [editingPhone, setEditingPhone] = useState(false);
+  const [name, setName] = useState(user.name);
+  const [phone, setPhone] = useState(user.phone);
+  const [email, setEmail] = useState(user.email);
+  const [newPassword, setNewPassword] = useState(""); // New password state
+  const [currentPassword, setCurrentPassword] = useState("");
 
-    const handlePhoneChange = (input) => {
-      // Remove non-digit characters from the input
-      const numericInput = input.replace(/\D/g, "");
-      setPhone(numericInput);
+  const [error, setError] = useState("");
+  const [editingPhone, setEditingPhone] = useState(false);
+
+  const handlePhoneChange = (input) => {
+    // Remove non-digit characters from the input
+    const numericInput = input.replace(/\D/g, "");
+    setPhone(numericInput);
   };
 
-    const handleUpdate = async () => {
-        setError("");
-        try {
-            updateUserData({ name, phone, email });
-            // Update password if newPassword is provided
-            if (newPassword) {
-                if (newPassword.length < 6) {
-                    setError("Please enter a (min 6 letter) password");
-                    return;
-                }
-                try {
-                    await updatePassword(newPassword);
-                    setNewPassword(""); // Reset newPassword state
-                } catch (error) {
-                    console.error("Error updating password:", error.message);
-                }
-            }
-        } catch (error) {
-            console.error("Error updating profile:", error.message);
-        }
-        navigation.goBack();
-    };
+  const handleEmailChange = (input) => {
+    setEmail(input);
+  };
 
-    return (
-        <SafeAreaView
-            style={{
-                flex: 1,
-                backgroundColor: "#fff",
-                alignItems: "center",
-                width: "100%",
-            }}
-        >
-            <Logo />
-            <View style={styles.container}>
-                <TextInput
-                    style={styles.input}
-                    placeholder={`Name`}
-                    value={name}
-                    onChangeText={setName}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder={`Phone`}
-                    value={editingPhone ? phone : formatPhoneNumber(phone)}
-                    onChangeText={handlePhoneChange}
-                    onFocus={() => setEditingPhone(true)} // Set editingPhone to true when editing starts
-                    onBlur={() => setEditingPhone(false)}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder={`Email`}
-                    value={email}
-                    onChangeText={setEmail}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder={`New Password`}
-                    value={newPassword}
-                    onChangeText={setNewPassword}
-                    secureTextEntry
-                />
-                <Text style={{ fontSize: 12, fontWeight: "100", marginTop: 20 }}>
-                    {error}
-                </Text>
-                <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-                    <Text style={styles.buttonText}>Update</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
-    );
+  const handleUpdate = async () => {
+    setError("");
+    try {
+      updateUserData({ name, phone, email });
+      // Update email if new email is provided
+      if (email !== user.email) {
+        try {
+          await updateEmail(email); // Update email in Firebase Authentication
+        } catch (error) {
+          console.error('Error updating email:', error.message);
+          setError('Error updating email. Please try again.');
+        }
+      }
+      // Update password if newPassword is provided
+      if (newPassword) {
+        if (newPassword.length < 6) {
+          setError("Please enter a (min 6 letter) password");
+          return;
+        }
+        try {
+          await updatePassword(newPassword);
+          setNewPassword(""); // Reset newPassword state
+        } catch (error) {
+          console.error("Error updating password:", error.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error.message);
+    }
+    navigation.goBack();
+  };
+
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+        alignItems: "center",
+        width: "100%",
+      }}
+    >
+      <Logo />
+      <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          placeholder={`Name`}
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder={`Phone`}
+          value={editingPhone ? phone : formatPhoneNumber(phone)}
+          onChangeText={handlePhoneChange}
+          onFocus={() => setEditingPhone(true)} // Set editingPhone to true when editing starts
+          onBlur={() => setEditingPhone(false)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder={`Email`}
+          value={email}
+          onChangeText={handleEmailChange}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder={`New Password`}
+          value={newPassword}
+          onChangeText={setNewPassword}
+          secureTextEntry
+        />
+        <Text style={{ fontSize: 12, fontWeight: "100", marginTop: 20 }}>
+          {error}
+        </Text>
+        <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+          <Text style={styles.buttonText}>Update</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 };
 
 export default UpdateProfile;
