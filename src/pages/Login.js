@@ -1,11 +1,11 @@
 import { useState } from "react";
 import {
   View,
-  Button,
   TextInput,
   StyleSheet,
   Text,
   SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
 import { login } from "../api/authentication";
 import { COLLECTION, get } from "../api/firestore";
@@ -21,6 +21,21 @@ const styles = StyleSheet.create({
     width: 200,
     margin: 10,
   },
+  submitButton: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#303a45",
+    padding: 12,
+    width: 200,
+    borderRadius: 20,
+  },
+  createAccountText: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 10,
+  },
 });
 
 export default function Login({ navigation }) {
@@ -34,12 +49,12 @@ export default function Login({ navigation }) {
     setError("");
 
     if (!email) {
-      setError("Please enter an email");
+      setError("Please enter an email!");
       return;
     }
 
     if (!pass || pass.length < 6) {
-      setError("Please enter a password");
+      setError("Please enter a password!");
       return;
     }
 
@@ -86,18 +101,29 @@ export default function Login({ navigation }) {
           onChangeText={setPass}
           secureTextEntry
         />
-        <Text style={{ fontSize: 12, fontWeight: "100", marginTop: 20 }}>
+        <Text
+          style={{
+            fontSize: 12,
+            fontWeight: "500",
+            marginTop: 20,
+            color: "red",
+          }}
+        >
           {error}
         </Text>
       </View>
 
-      <View style={{ marginBottom: 50 }}>
-        <Button title="Submit" onPress={onLogin} />
-        <Button
-          color="dimgrey"
-          title="Create an account"
+      <View style={{ marginBottom: 50, textAlign: "center" }}>
+        <TouchableOpacity onPress={onLogin} style={styles.submitButton}>
+          <Text style={{ color: "white" }}>Submit</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           onPress={() => navigation.navigate("Signup")}
-        />
+          style={styles.createAccountText}
+        >
+          <Text style={{ color: "dimgrey" }}>Create an account</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

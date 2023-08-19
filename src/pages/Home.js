@@ -1,5 +1,10 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import { Card } from "react-native-paper";
+import Rocket from "../../assets/rocket.png";
+import CartImage from "../../assets/cart.png";
+import Orders from "../../assets/orders.png";
+import Profile from "../../assets/profile.png";
+
 import useDataContext from "../api/dataContext";
 import { logout } from "../api/authentication";
 
@@ -14,22 +19,22 @@ export default function Home({ navigation }) {
   const tabOptions = [
     {
       name: "Spaceships",
-      img: "https://img.freepik.com/premium-vector/rocket-icon-rocket-planets-space-icon-white-isolated_138676-551.jpg",
+      img: Rocket,
       color: "#EAF0FF",
     },
     {
       name: "Cart",
-      img: "https://cdn-icons-png.flaticon.com/512/3900/3900101.png",
+      img: CartImage,
       color: "#EAF0FF",
     },
     {
       name: "Orders",
-      img: "https://cdn-icons-png.flaticon.com/512/3225/3225247.png",
+      img: Orders,
       color: "#EAF0FF",
     },
     {
       name: "Profile",
-      img: "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
+      img: Profile,
       color: "#EAF0FF",
     },
   ];
@@ -62,26 +67,28 @@ export default function Home({ navigation }) {
       <Text
         style={{
           fontWeight: "bold",
-          fontSize: 25,
+          fontSize: 20,
           color: "#123A65",
           textAlign: "center",
-          marginTop: 20,
+          marginTop: 50,
         }}
       >
         GALACTIC WHEELS
+      </Text>
+      <Text style={{ color: "dimgrey", textAlign: "center", paddingTop: 5 }}>
+        Unleash Your Inner Astronaut with us
       </Text>
       <View
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          marginTop: 20,
         }}
       >
         <Image
           // eslint-disable-next-line global-require
           source={require("../../assets/spaceship.png")}
-          style={{ height: 200, width: 200 }}
+          style={{ height: 150, width: 150 }}
         />
       </View>
 
@@ -92,6 +99,7 @@ export default function Home({ navigation }) {
             flexDirection: "row",
             flexWrap: "wrap",
             width: "100%",
+            marginTop: 30,
           }}
         >
           {tabOptions.map((item) => {
@@ -112,7 +120,7 @@ export default function Home({ navigation }) {
                   <Card style={{ backgroundColor: item.color }}>
                     <Card.Cover
                       style={{ height: 150, backgroundColor: item.color }}
-                      source={{ uri: item.img }}
+                      source={item.img}
                     />
                     <Text
                       style={{

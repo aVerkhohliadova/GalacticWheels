@@ -125,8 +125,8 @@ function List({ navigation }) {
                       <Image
                         source={{ uri: item.src }}
                         style={{
-                          width: 70,
-                          height: 70,
+                          width: 100,
+                          height: 100,
                           borderRadius: 10,
                         }}
                       />

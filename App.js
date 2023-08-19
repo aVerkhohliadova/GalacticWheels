@@ -3,7 +3,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PaperProvider } from "react-native-paper";
 import useDataContext, { DataContext } from "./src/api/dataContext";
-import { Cart, Checkout, Home, List, Login, Orders, Profile, Signup } from "./src/pages";
+import {
+  Cart,
+  Checkout,
+  Home,
+  List,
+  Login,
+  Orders,
+  Profile,
+  Signup,
+} from "./src/pages";
 import SpaceshipDetail from "./src/pages/SpaceshipDetail";
 import UpdateProfile from "./src/pages/UpdateProfile";
 
@@ -41,12 +50,23 @@ function Router() {
                 component={SpaceshipDetail}
                 options={{ headerShown: false }}
               />
-              <Stack.Screen name="Update Personal Information" component={UpdateProfile}/>
+              <Stack.Screen
+                name="Update Personal Information"
+                component={UpdateProfile}
+              />
             </>
           ) : (
             <>
-              <Stack.Screen name="Login" component={Login} />
-              <Stack.Screen name="Signup" component={Signup} />
+              <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Signup"
+                component={Signup}
+                options={{ headerShown: false }}
+              />
             </>
           )}
         </Stack.Navigator>
