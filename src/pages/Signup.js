@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   View,
-  Button,
+  TouchableOpacity,
   TextInput,
   Text,
   StyleSheet,
@@ -21,6 +21,21 @@ const styles = StyleSheet.create({
     width: 200,
     margin: 10,
   },
+  submitButton: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#303a45",
+    padding: 12,
+    width: 200,
+    borderRadius: 20,
+  },
+  backToLoginText: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 10,
+  },
 });
 
 export default function Login({ navigation }) {
@@ -35,17 +50,17 @@ export default function Login({ navigation }) {
     setError("");
 
     if (!name) {
-      setError("Please enter a name");
+      setError("Please enter a name!");
       return;
     }
 
     if (!email) {
-      setError("Please enter an email");
+      setError("Please enter an email!");
       return;
     }
 
     if (!pass || pass.length < 6) {
-      setError("Please enter a (min 6 letter) password");
+      setError("Please enter a (min 6 letter) password!");
       return;
     }
 
@@ -116,18 +131,30 @@ export default function Login({ navigation }) {
           onChangeText={setPass}
           secureTextEntry
         />
-        <Text style={{ fontSize: 12, fontWeight: "100", marginTop: 20 }}>
+        <Text
+          style={{
+            fontSize: 12,
+            fontWeight: "500",
+            marginTop: 20,
+            color: "red",
+            paddingTop: 10,
+          }}
+        >
           {error}
         </Text>
       </View>
 
       <View style={{ marginBottom: 50 }}>
-        <Button title="Submit" onPress={onSignup} />
-        <Button
-          color="dimgrey"
-          title="Back to Login"
+        <TouchableOpacity onPress={onSignup} style={styles.submitButton}>
+          <Text style={{ color: "white" }}>Submit</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           onPress={() => navigation.navigate("Login")}
-        />
+          style={styles.backToLoginText}
+        >
+          <Text style={{ color: "dimgrey" }}>Back to Login</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
