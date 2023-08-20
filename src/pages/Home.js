@@ -76,7 +76,7 @@ export default function Home({ navigation }) {
         GALACTIC WHEELS
       </Text>
       <Text style={{ color: "dimgrey", textAlign: "center", paddingTop: 5 }}>
-        Unleash Your Inner Astronaut with us
+        Rent your next spaceship with us!
       </Text>
       <View
         style={{

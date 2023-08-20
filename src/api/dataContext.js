@@ -1,10 +1,18 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { updatePassword as updateAuthPassword } from 'firebase/auth';
-import { updateEmail as updateAuthEmail } from 'firebase/auth';
-import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
-import { getUser } from './authentication';
-import { COLLECTION, get, getAll, update } from './firestore';
-import { auth } from '../../firebase.config';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  updatePassword as updateAuthPassword,
+  updateEmail as updateAuthEmail,
+} from "firebase/auth";
+import { getUser } from "./authentication";
+import { COLLECTION, get, getAll, update } from "./firestore";
+import { auth } from "../../firebase.config";
 
 const ctx = createContext();
 
@@ -19,12 +27,10 @@ export function DataContext({ children }) {
       if (authUser) {
         const user = await get(COLLECTION.USERS, authUser.uid);
         _setUser(user);
-      } else {
-        console.log('No authenticated user found!');
       }
 
       const spaceships = await getAll(COLLECTION.SPACESHIPS);
-      if (!spaceships) throw Error('Spaceships not found!');
+      if (!spaceships) throw Error("Spaceships not found!");
       _setSpaceships(spaceships);
 
       setIsLoading(false);
@@ -38,20 +44,25 @@ export function DataContext({ children }) {
   const updateUserData = useCallback(
     (userData) => {
       if (!user || !user.id) {
-        console.error('User data or user id is missing.');
+        console.error("User data or user id is missing.");
         return;
       }
 
       const updatedUser = { ...user, ...userData };
 
-      // Serialize orderHistory array
-      if (updatedUser && updatedUser.orderHistory && updatedUser.orderHistory.length > 0) {
-        const serializedOrderHistory = updatedUser.orderHistory.map((order) => ({
-          date: order.date,
-          items: order.items,
-          shippingInfo: { ...order.shippingInfo },
-          paymentInfo: { ...order.paymentInfo },
-        }));
+      if (
+        updatedUser &&
+        updatedUser.orderHistory &&
+        updatedUser.orderHistory.length > 0
+      ) {
+        const serializedOrderHistory = updatedUser.orderHistory.map(
+          (order) => ({
+            date: order.date,
+            items: order.items,
+            shippingInfo: { ...order.shippingInfo },
+            paymentInfo: { ...order.paymentInfo },
+          })
+        );
 
         updatedUser.orderHistory = serializedOrderHistory;
       }
@@ -60,7 +71,7 @@ export function DataContext({ children }) {
         _setUser(updatedUser);
         update(COLLECTION.USERS, updatedUser.id, updatedUser);
       } catch (error) {
-        console.error('Firestore update error:', error.message);
+        console.error("Firestore update error:", error.message);
       }
     },
     [user]
@@ -68,7 +79,7 @@ export function DataContext({ children }) {
 
   const updatePassword = useCallback(async (newPassword) => {
     const user = auth.currentUser;
-    await updateAuthPassword(user, newPassword); // Use updateAuthPassword
+    await updateAuthPassword(user, newPassword);
   }, []);
 
   const updateEmail = useCallback(async (newEmail) => {
@@ -76,14 +87,13 @@ export function DataContext({ children }) {
     try {
       await updateAuthEmail(user, newEmail);
       setUser((prevUser) => ({ ...prevUser, email: newEmail }));
-      // Update email in Firestore if needed
     } catch (error) {
-      console.error('Error updating email:', error.message);
+      console.error("Error updating email:", error.message);
       throw error;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Untested code
   const updateSpaceshipData = useCallback((updatedShip) => {
     _setSpaceships((spaceships) => [
       ...spaceships.filter((s) => s.id !== updatedShip.id),

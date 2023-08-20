@@ -12,53 +12,49 @@ import useDataContext from "../api/dataContext";
 import Order from "../DB/Order";
 
 const formatPhoneNumber = (phoneNumber) => {
-  if (!phoneNumber) {
-    return "";
+  if (!phoneNumber) return "";
+
+  if (phoneNumber.length === 10) {
+    // Default format: ###-###-####
+    return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(
+      3,
+      6
+    )}-${phoneNumber.slice(6)}`;
   }
-  // eslint-disable-next-line
-  else {
-    // eslint-disable-next-line
-    if (phoneNumber.length === 10) {
-      // Default format: ###-###-####
-      // eslint-disable-next-line
-      return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(
-        3,
-        6
-      )}-${phoneNumber.slice(6)}`;
-    }
-    // eslint-disable-next-line
-    else if (phoneNumber.length === 11) {
-      // Format: +#-###-###-####
-      return `+${phoneNumber.slice(0, 1)}-${phoneNumber.slice(
-        1,
-        4
-      )}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
-    } else if (phoneNumber.length === 12) {
-      // Format: +##-###-###-####
-      return `+${phoneNumber.slice(0, 2)}-${phoneNumber.slice(
-        2,
-        5
-      )}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
-    } else if (phoneNumber.length === 13) {
-      // Format: +###-###-###-####
-      return `+${phoneNumber.slice(0, 3)}-${phoneNumber.slice(
-        3,
-        6
-      )}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
-    } else if (phoneNumber.length >= 14) {
-      // Format: +####-###-###-####
-      return `+${phoneNumber.slice(0, 4)}-${phoneNumber.slice(
-        4,
-        7
-      )}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
-    } else {
-      return phoneNumber; // If none of the conditions match, return the original input
-    }
+  if (phoneNumber.length === 11) {
+    // Format: +#-###-###-####
+    return `+${phoneNumber.slice(0, 1)}-${phoneNumber.slice(
+      1,
+      4
+    )}-${phoneNumber.slice(4, 7)}-${phoneNumber.slice(7)}`;
   }
+  if (phoneNumber.length === 12) {
+    // Format: +##-###-###-####
+    return `+${phoneNumber.slice(0, 2)}-${phoneNumber.slice(
+      2,
+      5
+    )}-${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8)}`;
+  }
+  if (phoneNumber.length === 13) {
+    // Format: +###-###-###-####
+    return `+${phoneNumber.slice(0, 3)}-${phoneNumber.slice(
+      3,
+      6
+    )}-${phoneNumber.slice(6, 9)}-${phoneNumber.slice(9)}`;
+  }
+  if (phoneNumber.length >= 14) {
+    // Format: +####-###-###-####
+    return `+${phoneNumber.slice(0, 4)}-${phoneNumber.slice(
+      4,
+      7
+    )}-${phoneNumber.slice(7, 10)}-${phoneNumber.slice(10)}`;
+  }
+  return phoneNumber;
 };
 
 export default function Checkout({ route, navigation }) {
-  const { user, updateUserData } = useDataContext();
+  const { user, updateUserData, spaceships, updateSpaceshipData } =
+    useDataContext();
   const [editingPhone, setEditingPhone] = useState(false);
   const [confirmOrderModal, setConfirmOrderModal] = useState(false);
   const [error, setError] = useState(false);
@@ -110,12 +106,10 @@ export default function Checkout({ route, navigation }) {
     };
 
     try {
-      // Check if orderHistory is an array
       const orderHistoryArray = Array.isArray(user.orderHistory)
         ? user.orderHistory
         : [];
 
-      // Store serializedOrder in Firestore document
       await updateUserData({
         ...user,
         cart: [],
@@ -124,6 +118,13 @@ export default function Checkout({ route, navigation }) {
 
       setConfirmOrderModal(false);
       setOrderSuccessModal(true);
+
+      const updatedShipIds = newOrder.items.map((i) => i.spaceshipId);
+      spaceships
+        .filter((s) => updatedShipIds.includes(s.id))
+        .forEach((s) => {
+          updateSpaceshipData({ ...s, available: false });
+        });
     } catch (error) {
       console.error("Error updating user data:", error);
     }
@@ -243,7 +244,7 @@ export default function Checkout({ route, navigation }) {
             style={{ marginTop: 10, display: "flex", flexDirection: "row" }}
           >
             <View style={{ flex: 1, marginRight: 20 }}>
-              <Text>Code</Text>
+              <Text>Security Code</Text>
               <TextInput
                 placeholder="Code"
                 style={styles.input}
@@ -257,7 +258,7 @@ export default function Checkout({ route, navigation }) {
               />
             </View>
             <View style={{ flex: 1 }}>
-              <Text>Type</Text>
+              <Text>Expiry</Text>
               <TextInput
                 placeholder="Expiry Date"
                 style={styles.input}
@@ -302,8 +303,7 @@ export default function Checkout({ route, navigation }) {
       {/* order confirm modal */}
       <Modal
         animationType="slide"
-        // eslint-disable-next-line
-        transparent={true}
+        transparent
         visible={confirmOrderModal}
         onRequestClose={() => {
           setConfirmOrderModal(!confirmOrderModal);
@@ -335,12 +335,7 @@ export default function Checkout({ route, navigation }) {
         </View>
       </Modal>
       {/* order success modal */}
-      <Modal
-        animationType="slide"
-        // eslint-disable-next-line
-        transparent={true}
-        visible={orderSuccessModal}
-      >
+      <Modal animationType="slide" transparent visible={orderSuccessModal}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalView.modalHeader}>Success</Text>
